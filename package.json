@@ -10,19 +10,25 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/node": "20.14.9",
-    "@types/nodemailer": "6.4.15",
-    "prisma": "5.16.1",
-    "tsx": "4.16.0",
-    "typescript": "5.5.2"
+    "@types/node": "25.9.1",
+    "@types/nodemailer": "8.0.0",
+    "prisma": "7.8.0",
+    "tsx": "4.22.4",
+    "typescript": "6.0.3"
   },
   "dependencies": {
-    "@fastify/cors": "9.0.1",
-    "@prisma/client": "5.16.1",
-    "dayjs": "1.11.11",
-    "fastify": "4.28.1",
-    "fastify-type-provider-zod": "2.0.0",
-    "nodemailer": "6.9.14",
-    "zod": "3.23.8"
+    "@fastify/cors": "11.2.0",
+    "@fastify/swagger": "^9.7.0",
+    "@fastify/swagger-ui": "^5.2.6",
+    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/client": "7.8.0",
+    "@scalar/fastify-api-reference": "^1.57.5",
+    "better-sqlite3": "^12.10.0",
+    "dayjs": "1.11.21",
+    "fastify": "5.8.5",
+    "fastify-type-provider-zod": "6.1.0",
+    "nodemailer": "8.0.10",
+    "npm-check-updates": "^22.2.1",
+    "zod": "4.4.3"
   }
 }
