@@ -3,18 +3,40 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch --env-file .env src/server.ts"
+    "dev": "tsx watch --env-file .env src/server.ts",
+    "start": "node --env-file .env dist/index.mjs",
+    "production": "node dist/index.mjs",
+    "build": "tsup",
+    "db:seed": "tsx --env-file=.env src/infra/database/seed.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "25.9.1",
     "@types/nodemailer": "8.0.0",
+    "@types/pg": "^8.20.0",
+    "@typescript-eslint/eslint-plugin": "^8.60.0",
+    "@typescript-eslint/parser": "^8.60.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
     "prisma": "7.8.0",
+    "tsup": "^8.5.1",
     "tsx": "4.22.4",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.60.0"
   },
   "dependencies": {
     "@fastify/cors": "11.2.0",
@@ -23,12 +45,18 @@
     "@prisma/adapter-better-sqlite3": "^7.8.0",
     "@prisma/client": "7.8.0",
     "@scalar/fastify-api-reference": "^1.57.5",
+    "better-auth": "^1.6.13",
     "better-sqlite3": "^12.10.0",
     "dayjs": "1.11.21",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
     "fastify": "5.8.5",
     "fastify-type-provider-zod": "6.1.0",
     "nodemailer": "8.0.10",
     "npm-check-updates": "^22.2.1",
+    "pg": "^8.21.0",
+    "postgres": "^3.4.9",
+    "uuid": "^14.0.0",
     "zod": "4.4.3"
   }
 }

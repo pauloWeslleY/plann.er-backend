@@ -1,0 +1,44 @@
+interface TripProps {
+  destination: string;
+  startsAt: Date;
+  endsAt: Date;
+  userId: string;
+}
+
+export class Trip {
+  private constructor(
+    public readonly id: string,
+    private props: TripProps,
+  ) {}
+
+  static restore(props: TripProps & { id: string }): Trip {
+    return new Trip(props.id, props);
+  }
+
+  static create(id: string, props: TripProps): Trip {
+    return new Trip(id, props);
+  }
+
+  get destination(): string {
+    return this.props.destination;
+  }
+
+  get startsAt(): Date {
+    return this.props.startsAt;
+  }
+
+  get endsAt(): Date {
+    return this.props.endsAt;
+  }
+
+  get userId(): string {
+    return this.props.userId;
+  }
+
+  update(destination: string, startsAt: Date, endsAt: Date): void {
+    if (destination.trim() === "") return;
+    this.props.destination = destination;
+    this.props.startsAt = startsAt;
+    this.props.endsAt = endsAt;
+  }
+}
