@@ -30,6 +30,7 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
         userId: schema.TripsTable.userId,
         isConfirmed: schema.ParticipantsTripsTable.isConfirmed,
         isOwner: schema.ParticipantsTripsTable.isOwner,
+        status: schema.TripsTable.status,
       })
       .from(schema.TripsTable)
       .innerJoin(
