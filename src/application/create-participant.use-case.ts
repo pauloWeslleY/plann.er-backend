@@ -4,20 +4,34 @@ import {
   type CreateParticipantDTO,
   type ParticipantDTO,
 } from "./dto/participant.dto";
+import { TripStatus } from "./dto/trip.dto";
 import { type CreateParticipantPort } from "./ports/create-participant.port";
 import { type ParticipantRepositoryPort } from "./ports/participant-repository.port";
+import { type TripRepositoryPort } from "./ports/trip-repository.port";
 
 export class CreateParticipantUseCase implements CreateParticipantPort {
   constructor(
+    private readonly tripRepository: TripRepositoryPort,
     private readonly participantRepository: ParticipantRepositoryPort,
   ) {}
 
   async execute(
     input: CreateParticipantDTO,
-  ): Promise<Pick<ParticipantDTO, "email" | "name">[]> {
-    const existingParticipant = await this.participantRepository.findByTripId(
-      input.tripId,
-    );
+  ): Promise<Pick<ParticipantDTO, "id" | "email" | "name">[]> {
+    const [existingParticipant, trip] = await Promise.all([
+      this.participantRepository.findByTripId(input.tripId),
+      this.tripRepository.findById(input.tripId),
+    ]);
+
+    if (!trip) {
+      throw new BadRequestError("Viagem não encontrada.");
+    }
+
+    if (trip.status === TripStatus.CANCELLED) {
+      throw new BadRequestError(
+        "Participante não pode ser adicionado para uma viagem com status cancelado.",
+      );
+    }
 
     const existingParticipantWithEmail = existingParticipant.some(
       (participant) =>

@@ -3,6 +3,7 @@ import { type DateJS } from "@/resources/date-js/datejs";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 import { type MailClient } from "@/resources/mail-client/mail-client";
 
+import { TripStatus } from "./dto/trip.dto";
 import { type ConfirmTripPort } from "./ports/confirm-trip.port";
 import { type ParticipantRepositoryPort } from "./ports/participant-repository.port";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
@@ -22,6 +23,12 @@ export class ConfirmTripUseCase implements ConfirmTripPort {
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
+    }
+
+    if (trip.status === TripStatus.CANCELLED) {
+      throw new BadRequestError(
+        "Não é possível confirmar uma viagem cancelada.",
+      );
     }
 
     if (trip.isConfirmed) {

@@ -83,6 +83,7 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
         startsAt: schema.TripsTable.startsAt,
         endsAt: schema.TripsTable.endsAt,
         userId: schema.TripsTable.userId,
+        status: schema.TripsTable.status,
         isOwner: schema.ParticipantsTripsTable.isOwner,
       })
       .from(schema.TripsTable)

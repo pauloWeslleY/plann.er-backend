@@ -1,6 +1,10 @@
 import { and, eq } from "drizzle-orm";
 
-import { type CreateLinkDTO, type LinkRow } from "@/application/dto/link.dto";
+import {
+  type CreateLinkDTO,
+  type LinkDetailsDTO,
+  type LinkRow,
+} from "@/application/dto/link.dto";
 import { type LinkRepositoryPort } from "@/application/ports/link.repository.port";
 import { database } from "@/resources/database";
 import { schema } from "@/resources/database/schemas";
@@ -40,6 +44,27 @@ export class DrizzleLinkRepositoryAdapter implements LinkRepositoryPort {
       .where(
         and(eq(schema.LinksTable.id, id), eq(schema.LinksTable.tripId, tripId)),
       );
+
+    return result ?? null;
+  }
+
+  async findLinkById(data: {
+    id: string;
+    tripId: string;
+  }): Promise<LinkDetailsDTO | null> {
+    const [result] = await database
+      .select({
+        id: schema.LinksTable.id,
+        title: schema.LinksTable.title,
+        url: schema.LinksTable.url,
+        trip: schema.TripsTable,
+      })
+      .from(schema.LinksTable)
+      .leftJoin(
+        schema.TripsTable,
+        eq(schema.LinksTable.tripId, schema.TripsTable.id),
+      )
+      .where(eq(schema.LinksTable.id, data.id));
 
     return result ?? null;
   }

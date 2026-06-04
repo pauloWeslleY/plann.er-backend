@@ -19,6 +19,14 @@ export class UpdateTripUseCase implements UpdateTripPort {
       throw new NotFoundError("Viagem não encontrada.");
     }
 
+    const tripDomain = TripMapper.toDomain(existingTrips);
+
+    if (!tripDomain.canBeEdited()) {
+      throw new BadRequestError(
+        "Viagem não pode ser editada no status cancelado.",
+      );
+    }
+
     const tripDates = {
       startsAt: this.date.dayjs(input.startsAt),
       endsAt: this.date.dayjs(input.endsAt),
@@ -33,8 +41,6 @@ export class UpdateTripUseCase implements UpdateTripPort {
     if (tripDates.endsAt.isBefore(tripDates.startsAt)) {
       throw new BadRequestError("Fim da viagem deve ser após o início.");
     }
-
-    const tripDomain = TripMapper.toDomain(existingTrips);
 
     tripDomain.update(
       input.destination,

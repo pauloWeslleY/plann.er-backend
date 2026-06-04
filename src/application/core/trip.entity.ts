@@ -1,8 +1,11 @@
+import { TripStatus } from "../dto/trip.dto";
+
 interface TripProps {
   destination: string;
   startsAt: Date;
   endsAt: Date;
   userId: string;
+  status: keyof typeof TripStatus;
 }
 
 export class Trip {
@@ -33,6 +36,19 @@ export class Trip {
 
   get userId(): string {
     return this.props.userId;
+  }
+
+  canBeEdited(status?: TripStatus): boolean {
+    const validStatuses = new Set([TripStatus.PLANNED, TripStatus.CONFIRMED]);
+    return validStatuses.has(status ?? (this.props.status as TripStatus));
+  }
+
+  updateStatus(status: TripStatus): void {
+    if (!this.canBeEdited(status)) {
+      return;
+    }
+
+    this.props.status = status;
   }
 
   update(destination: string, startsAt: Date, endsAt: Date): void {

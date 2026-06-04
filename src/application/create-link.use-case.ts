@@ -1,7 +1,8 @@
 import { v7 as uuidv7 } from "uuid";
 
 import { LinkMapper } from "@/adapters/output/mappers/link.mapper";
-import { NotFoundError } from "@/resources/errors/app-error";
+import { TripMapper } from "@/adapters/output/mappers/trip.mapper";
+import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
 import { type InputLinkDTO } from "./dto/link.dto";
 import { type CreateLinkPort } from "./ports/create-link.port";
@@ -19,6 +20,14 @@ export class CreateLinkUseCase implements CreateLinkPort {
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
+    }
+
+    const tripDomain = TripMapper.toDomain(trip);
+
+    if (!tripDomain.canBeEdited()) {
+      throw new BadRequestError(
+        "Link não pode ser criado para uma viagem com status cancelado.",
+      );
     }
 
     const link = await this.linkRepository.create({

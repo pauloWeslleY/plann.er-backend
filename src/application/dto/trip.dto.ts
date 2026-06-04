@@ -2,6 +2,12 @@ import { type schema } from "@/resources/database/schemas";
 
 export type TripRow = typeof schema.TripsTable.$inferSelect;
 
+export enum TripStatus {
+  PLANNED = "PLANNED",
+  CONFIRMED = "CONFIRMED",
+  CANCELLED = "CANCELLED",
+}
+
 export interface TripDTO {
   id: string;
   destination: string;
@@ -34,6 +40,7 @@ export interface TripWithOwnerStatusRow {
   endsAt: Date;
   userId: string;
   isOwner: boolean;
+  status: keyof typeof TripStatus;
 }
 
 export interface TripDetailsDTO {
@@ -44,4 +51,5 @@ export interface TripDetailsDTO {
   userId: string;
   isOwner: boolean;
   isConfirmed: boolean;
+  status: keyof typeof TripStatus;
 }

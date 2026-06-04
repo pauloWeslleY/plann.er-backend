@@ -1,9 +1,8 @@
 import nodemailer from "nodemailer";
-import { v7 as uuidv7 } from "uuid";
 
 import { env } from "@/config/env";
-import { NotFoundError } from "@/resources/errors/app-error";
 import { type DateJS } from "@/resources/date-js/datejs";
+import { NotFoundError } from "@/resources/errors/app-error";
 import { type MailClient } from "@/resources/mail-client/mail-client";
 
 import { type CreateInviteDTO } from "./dto/invite.dto";
@@ -22,18 +21,19 @@ export class CreateInviteUseCase implements CreateInvitePort {
   ) {}
 
   async execute(input: CreateInviteDTO): Promise<{ participantId: string }> {
-    const trip = await this.tripRepository.findByDestination(input.tripId);
+    const trip = await this.tripRepository.findById(input.tripId);
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
     }
 
-    const participantId = uuidv7();
-
     const participant = await this.participantRepository.create({
-      id: participantId,
-      email: input.email,
       tripId: trip.id,
+      participants: [
+        {
+          email: input.email,
+        },
+      ],
     });
 
     const formattedStartDate = this.service.date
@@ -48,7 +48,7 @@ export class CreateInviteUseCase implements CreateInvitePort {
         name: "Equipe plann.er",
         address: "oi@plann.er",
       },
-      to: participant.email,
+      to: participant[0].email,
       subject: `Confirme sua viagem para ${trip.destination} em ${formattedStartDate}`,
       html: `
         <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
@@ -68,7 +68,7 @@ export class CreateInviteUseCase implements CreateInvitePort {
     console.log(nodemailer.getTestMessageUrl(mail));
 
     return {
-      participantId: participant.id,
+      participantId: participant[0].id,
     };
   }
 }

@@ -7,6 +7,7 @@ import {
   type ActivityRow,
   type CreateActivityDTO as UpdateActivityDTO,
 } from "./dto/activities.dto";
+import { TripStatus } from "./dto/trip.dto";
 import { type ActivityRepositoryPort } from "./ports/activities.repository.port";
 import { type UpdateActivityPort } from "./ports/update-activity.port";
 
@@ -24,6 +25,12 @@ export class UpdateActivityUseCase implements UpdateActivityPort {
 
     if (!alreadyActivity) {
       throw new NotFoundError("Atividade não encontrada.");
+    }
+
+    if (alreadyActivity.trip.status === TripStatus.CANCELLED) {
+      throw new BadRequestError(
+        "Atividade não pode ser atualizada para uma viagem com status cancelado.",
+      );
     }
 
     // TODO: Validar se a data de ocorrência da atividade está dentro do intervalo da viagem

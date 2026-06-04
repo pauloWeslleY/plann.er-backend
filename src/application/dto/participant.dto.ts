@@ -49,7 +49,8 @@ export interface CreateParticipantDTO {
   }[];
 }
 
-export interface ParticipantTransactionDTO {
+export interface ParticipantListDTO {
   id: string;
   email: string;
+  name: string | null;
 }

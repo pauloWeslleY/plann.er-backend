@@ -5,6 +5,7 @@ import {
   type ParticipantDTO,
   type UpdateParticipantDTO,
 } from "./dto/participant.dto";
+import { TripStatus } from "./dto/trip.dto";
 import { type ParticipantRepositoryPort } from "./ports/participant-repository.port";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
 import { type UpdateParticipantPort } from "./ports/update-participant.port";
@@ -32,6 +33,12 @@ export class UpdateParticipantUseCase implements UpdateParticipantPort {
     if (!trip || !trip.isOwner) {
       throw new BadRequestError(
         "Somente o proprietário da viagem pode atualizar os participantes.",
+      );
+    }
+
+    if (trip.status === TripStatus.CANCELLED) {
+      throw new BadRequestError(
+        "Não é possível atualizar um participante de uma viagem cancelada.",
       );
     }
 

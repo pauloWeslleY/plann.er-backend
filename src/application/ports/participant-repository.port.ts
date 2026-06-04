@@ -2,6 +2,7 @@ import { type Participant } from "../core/participant.entity";
 import {
   type CreateParticipantDTO,
   type ParticipantDTO,
+  type ParticipantListDTO,
   type ParticipantRow,
   type ParticipantsRow,
   type UpdateParticipantDTO,
@@ -13,8 +14,6 @@ export interface ParticipantRepositoryPort {
   findByEmail(email: string): Promise<ParticipantRow["participant"] | null>;
   save(participant: Participant): Promise<void>;
   update(participant: UpdateParticipantDTO): Promise<ParticipantDTO>;
-  create(
-    participant: CreateParticipantDTO,
-  ): Promise<Pick<ParticipantDTO, "email" | "name">[]>;
+  create(participant: CreateParticipantDTO): Promise<ParticipantListDTO[]>;
   delete(id: string, tripId: string): Promise<void>;
 }

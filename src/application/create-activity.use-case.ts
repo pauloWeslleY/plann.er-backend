@@ -1,5 +1,6 @@
 import { v7 as uuidv7 } from "uuid";
 
+import { TripMapper } from "@/adapters/output/mappers/trip.mapper";
 import { type DateJS } from "@/resources/date-js/datejs";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
@@ -23,6 +24,14 @@ export class CreateActivityUseCase implements CreateActivityPort {
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
+    }
+
+    const tripDomain = TripMapper.toDomain(trip);
+
+    if (!tripDomain.canBeEdited()) {
+      throw new BadRequestError(
+        "Atividade não pode ser criada para uma viagem com status cancelado.",
+      );
     }
 
     const tripDate = {

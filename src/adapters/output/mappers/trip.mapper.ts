@@ -9,6 +9,7 @@ export class TripMapper {
       destination: row.destination,
       startsAt: row.startsAt,
       endsAt: row.endsAt,
+      status: row.status,
     });
   }
 

@@ -4,6 +4,7 @@ import type { Participant } from "@/application/core/participant.entity";
 import {
   type CreateParticipantDTO,
   type ParticipantDTO,
+  type ParticipantListDTO,
   type ParticipantRow,
   type ParticipantsRow,
   type UpdateParticipantDTO,
@@ -90,11 +91,9 @@ export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositor
       );
   }
 
-  async create(
-    data: CreateParticipantDTO,
-  ): Promise<Pick<ParticipantDTO, "email" | "name">[]> {
+  async create(data: CreateParticipantDTO): Promise<ParticipantListDTO[]> {
     return await database.transaction(async (tx) => {
-      const createdParticipants: Pick<ParticipantDTO, "email" | "name">[] = [];
+      const createdParticipants: ParticipantListDTO[] = [];
 
       for (const participantData of data.participants) {
         const [createdParticipant] = await tx
@@ -117,6 +116,7 @@ export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositor
         });
 
         createdParticipants.push({
+          id: createdParticipant.id,
           email: createdParticipant.email,
           name: createdParticipant.name,
         });

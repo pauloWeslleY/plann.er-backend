@@ -1,10 +1,8 @@
 import {
   type CreateParticipantDTO,
-  type ParticipantDTO,
+  type ParticipantListDTO,
 } from "../dto/participant.dto";
 
 export interface CreateParticipantPort {
-  execute(
-    input: CreateParticipantDTO,
-  ): Promise<Pick<ParticipantDTO, "email" | "name">[]>;
+  execute(input: CreateParticipantDTO): Promise<ParticipantListDTO[]>;
 }
