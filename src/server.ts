@@ -11,6 +11,7 @@ import {
 import { env } from "./config/env";
 import { activityRoutes } from "./drivers/routes/activities/activities.routes";
 import { inviteRoutes } from "./drivers/routes/create-invite/invite.routes";
+import { linksRoutes } from "./drivers/routes/links/links.routes";
 import { participantsRoutes } from "./drivers/routes/participants/participants.routes";
 import { tripsRoutes } from "./drivers/routes/trips/trips.routes";
 import { errorHandler } from "./resources/errors/error-handler";
@@ -44,6 +45,7 @@ app.register(authRoutes);
 app.register(participantsRoutes);
 app.register(activityRoutes);
 app.register(tripsRoutes);
+app.register(linksRoutes);
 app.register(inviteRoutes);
 
 app.listen({ port: env.PORT }).then(() => {

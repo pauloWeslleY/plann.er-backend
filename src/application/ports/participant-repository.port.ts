@@ -16,5 +16,5 @@ export interface ParticipantRepositoryPort {
   create(
     participant: CreateParticipantDTO,
   ): Promise<Pick<ParticipantDTO, "email" | "name">[]>;
-  delete(id: string): Promise<void>;
+  delete(id: string, tripId: string): Promise<void>;
 }

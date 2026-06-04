@@ -1,6 +1,12 @@
-import { type CreateLinkDTO, type LinkRow } from "../dto/link.dto";
+import {
+  type CreateLinkDTO,
+  type DeleteLinkDTO,
+  type LinkRow,
+} from "../dto/link.dto";
 
 export interface LinkRepositoryPort {
   create(data: CreateLinkDTO): Promise<LinkRow>;
+  delete(data: DeleteLinkDTO): Promise<void>;
   findManyByTripId(tripId: string): Promise<Omit<LinkRow, "tripId">[]>;
+  findById(id: string, tripId: string): Promise<LinkRow | null>;
 }

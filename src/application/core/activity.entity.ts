@@ -29,4 +29,11 @@ export class Activity {
   get tripId(): string {
     return this.props.tripId;
   }
+
+  update(props: Partial<ActivityProps>): void {
+    this.props = {
+      ...this.props,
+      ...props,
+    };
+  }
 }

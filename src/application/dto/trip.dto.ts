@@ -35,3 +35,13 @@ export interface TripWithOwnerStatusRow {
   userId: string;
   isOwner: boolean;
 }
+
+export interface TripDetailsDTO {
+  id: string;
+  destination: string;
+  startsAt: Date;
+  endsAt: Date;
+  userId: string;
+  isOwner: boolean;
+  isConfirmed: boolean;
+}

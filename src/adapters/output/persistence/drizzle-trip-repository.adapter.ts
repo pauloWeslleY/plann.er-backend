@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 
 import { type Trip } from "@/application/core/trip.entity";
 import {
+  type TripDetailsDTO,
   type TripRow,
   type TripWithOwnerStatusRow,
 } from "@/application/dto/trip.dto";
@@ -15,6 +16,31 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
       .select()
       .from(schema.TripsTable)
       .where(eq(schema.TripsTable.destination, destination));
+
+    return result ?? null;
+  }
+
+  async findUniqueTripAndOwner(tripId: string): Promise<TripDetailsDTO | null> {
+    const [result] = await database
+      .select({
+        id: schema.TripsTable.id,
+        destination: schema.TripsTable.destination,
+        startsAt: schema.TripsTable.startsAt,
+        endsAt: schema.TripsTable.endsAt,
+        userId: schema.TripsTable.userId,
+        isConfirmed: schema.ParticipantsTripsTable.isConfirmed,
+        isOwner: schema.ParticipantsTripsTable.isOwner,
+      })
+      .from(schema.TripsTable)
+      .innerJoin(
+        schema.ParticipantsTripsTable,
+        and(
+          eq(schema.ParticipantsTripsTable.tripId, schema.TripsTable.id),
+          eq(schema.ParticipantsTripsTable.isOwner, true),
+        ),
+      )
+      .where(eq(schema.TripsTable.id, tripId))
+      .limit(1);
 
     return result ?? null;
   }

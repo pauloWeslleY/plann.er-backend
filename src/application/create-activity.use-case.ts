@@ -1,16 +1,18 @@
 import { v7 as uuidv7 } from "uuid";
 
-import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 import { type DateJS } from "@/resources/date-js/datejs";
+import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
 import { Activity } from "./core/activity.entity";
 import { type CreateActivityDTO } from "./dto/activities.dto";
+import { type ActivityRepositoryPort } from "./ports/activities.repository.port";
 import { type CreateActivityPort } from "./ports/create-activity.port";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
 
 export class CreateActivityUseCase implements CreateActivityPort {
   constructor(
     private readonly tripRepository: TripRepositoryPort,
+    private readonly activityRepository: ActivityRepositoryPort,
     private readonly service: { date: DateJS },
   ) {}
 
@@ -45,6 +47,8 @@ export class CreateActivityUseCase implements CreateActivityPort {
       occursAt: tripDate.startsAt.toDate(),
       tripId: input.tripId,
     });
+
+    await this.activityRepository.create(activity);
 
     return {
       activityId: activity.id,

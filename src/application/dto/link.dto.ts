@@ -20,3 +20,8 @@ export interface InputLinkDTO {
   title: string;
   url: string;
 }
+
+export interface DeleteLinkDTO {
+  id: string;
+  tripId: string;
+}

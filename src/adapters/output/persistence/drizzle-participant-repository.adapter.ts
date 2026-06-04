@@ -46,6 +46,8 @@ export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositor
         name: schema.ParticipantsTable.name,
         email: schema.ParticipantsTable.email,
         is_confirmed: schema.ParticipantsTripsTable.isConfirmed,
+        is_owner: schema.ParticipantsTripsTable.isOwner,
+        trip_id: schema.ParticipantsTripsTable.tripId,
       })
       .from(schema.ParticipantsTable)
       .innerJoin(
@@ -150,9 +152,14 @@ export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositor
     return result;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string, tripId: string): Promise<void> {
     await database
-      .delete(schema.ParticipantsTable)
-      .where(eq(schema.ParticipantsTable.id, id));
+      .delete(schema.ParticipantsTripsTable)
+      .where(
+        and(
+          eq(schema.ParticipantsTripsTable.participantId, id),
+          eq(schema.ParticipantsTripsTable.tripId, tripId),
+        ),
+      );
   }
 }

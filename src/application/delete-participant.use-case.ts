@@ -16,7 +16,7 @@ export class DeleteParticipantUseCase implements DeleteParticipantPort {
       input.tripId,
     );
 
-    const participantToDelete = existingParticipant.find(
+    const participantToDelete = existingParticipant.some(
       (participant) => participant.id === input.participantId,
     );
 
@@ -24,6 +24,6 @@ export class DeleteParticipantUseCase implements DeleteParticipantPort {
       throw new BadRequestError("Participante não encontrado.");
     }
 
-    await this.participantRepository.delete(input.participantId);
+    await this.participantRepository.delete(input.participantId, input.tripId);
   }
 }

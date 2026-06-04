@@ -1,6 +1,6 @@
 import { env } from "@/config/env";
-import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 import { type DateJS } from "@/resources/date-js/datejs";
+import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 import { type MailClient } from "@/resources/mail-client/mail-client";
 
 import { type ConfirmTripPort } from "./ports/confirm-trip.port";
@@ -18,7 +18,7 @@ export class ConfirmTripUseCase implements ConfirmTripPort {
   ) {}
 
   async execute(input: { tripId: string }): Promise<{ url: string }> {
-    const trip = await this.tripRepository.findById(input.tripId);
+    const trip = await this.tripRepository.findUniqueTripAndOwner(input.tripId);
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
@@ -30,7 +30,10 @@ export class ConfirmTripUseCase implements ConfirmTripPort {
       };
     }
 
-    await this.tripRepository.save({ isConfirmed: true, tripId: trip.id });
+    await this.tripRepository.save({
+      isConfirmed: true,
+      tripId: trip.id,
+    });
 
     const tripDate = {
       startsAt: this.service.date.dayjs(trip.startsAt),

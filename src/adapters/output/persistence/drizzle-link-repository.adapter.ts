@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { type CreateLinkDTO, type LinkRow } from "@/application/dto/link.dto";
 import { type LinkRepositoryPort } from "@/application/ports/link.repository.port";
@@ -31,5 +31,27 @@ export class DrizzleLinkRepositoryAdapter implements LinkRepositoryPort {
       .where(eq(schema.LinksTable.tripId, tripId));
 
     return result;
+  }
+
+  async findById(id: string, tripId: string): Promise<LinkRow | null> {
+    const [result] = await database
+      .select()
+      .from(schema.LinksTable)
+      .where(
+        and(eq(schema.LinksTable.id, id), eq(schema.LinksTable.tripId, tripId)),
+      );
+
+    return result ?? null;
+  }
+
+  async delete(data: { id: string; tripId: string }): Promise<void> {
+    await database
+      .delete(schema.LinksTable)
+      .where(
+        and(
+          eq(schema.LinksTable.id, data.id),
+          eq(schema.LinksTable.tripId, data.tripId),
+        ),
+      );
   }
 }
