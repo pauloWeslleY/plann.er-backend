@@ -1,6 +1,7 @@
 import z from "zod";
 
 const envSchema = z.object({
+  HOST: z.string().default("0.0.0.0"),
   API_BASE_URL: z.url(),
   WEB_BASE_URL: z.url(),
   POSTGRES_URL: z.url(),

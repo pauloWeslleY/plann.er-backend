@@ -52,6 +52,6 @@ app.register(tripsRoutes);
 app.register(linksRoutes);
 app.register(inviteRoutes);
 
-app.listen({ port: env.PORT }).then(() => {
+app.listen({ port: env.PORT, host: env.HOST }).then(() => {
   console.log("Server running!");
 });
