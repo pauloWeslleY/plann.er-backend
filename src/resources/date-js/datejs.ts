@@ -1,7 +1,8 @@
 import "dayjs/locale/pt-br.js";
+import "dayjs/locale/pt-br.js";
 
 import dayjs from "dayjs";
-import localizedFormat from "dayjs/plugin/localizedFormat";
+import localizedFormat from "dayjs/plugin/localizedFormat.js";
 
 dayjs.locale("pt-br");
 dayjs.extend(localizedFormat);
