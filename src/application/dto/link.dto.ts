@@ -1,8 +1,11 @@
-import { type schema } from "@/resources/database/schemas";
+import { type ITrip } from "./trip.dto";
 
-import { type TripRow } from "./trip.dto";
-
-export type LinkRow = typeof schema.LinksTable.$inferSelect;
+export interface LinkRow {
+  id: string;
+  title: string;
+  tripId: string;
+  url: string;
+}
 
 export interface CreateLinkDTO {
   id: string;
@@ -32,5 +35,5 @@ export interface LinkDetailsDTO {
   id: string;
   title: string;
   url: string;
-  trip: TripRow | null;
+  trip: ITrip | null;
 }

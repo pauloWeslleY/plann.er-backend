@@ -1,5 +1,5 @@
-import { type ActivityDTO } from "../dto/activities.dto";
+import { type ActivitiesListDTO } from "../dto/activities.dto";
 
 export interface GetActivitiesPort {
-  execute(input: { tripId: string }): Promise<ActivityDTO[]>;
+  execute(input: { tripId: string }): Promise<ActivitiesListDTO[]>;
 }

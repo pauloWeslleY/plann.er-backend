@@ -16,7 +16,7 @@ import { schema } from "@/resources/database/schemas";
 import { ParticipantMapper } from "../mappers/participant.mapper";
 
 export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositoryPort {
-  async findById(id: string): Promise<ParticipantRow | null> {
+  async findById(id: string): Promise<Participant | null> {
     const [row] = await database
       .select({
         participant: schema.ParticipantsTable,
@@ -37,7 +37,42 @@ export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositor
       return null;
     }
 
-    return row;
+    return ParticipantMapper.toDomain(row);
+  }
+  async findDetailsById(id: string): Promise<ParticipantDTO | null> {
+    const [row] = await database
+      .select({
+        id: schema.ParticipantsTable.id,
+        name: schema.ParticipantsTable.name,
+        email: schema.ParticipantsTable.email,
+        tripId: schema.ParticipantsTripsTable.tripId,
+        isOwner: schema.ParticipantsTripsTable.isOwner,
+        isConfirmed: schema.ParticipantsTripsTable.isConfirmed,
+      })
+      .from(schema.ParticipantsTable)
+      .innerJoin(
+        schema.ParticipantsTripsTable,
+        eq(
+          schema.ParticipantsTripsTable.participantId,
+          schema.ParticipantsTable.id,
+        ),
+      )
+      .where(eq(schema.ParticipantsTable.id, id))
+      .limit(1);
+
+    if (!row) {
+      return null;
+    }
+
+    return ParticipantMapper.toDTO({
+      participant: { id: row.id, name: row.name, email: row.email },
+      participantTrip: {
+        participantId: row.id,
+        tripId: row.tripId,
+        isOwner: row.isOwner,
+        isConfirmed: row.isConfirmed,
+      },
+    });
   }
 
   async findByTripId(tripId: string): Promise<ParticipantsRow[]> {
@@ -82,7 +117,9 @@ export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositor
   async save(participant: Participant): Promise<void> {
     await database
       .update(schema.ParticipantsTripsTable)
-      .set(ParticipantMapper.toPersistence(participant))
+      .set({
+        isConfirmed: participant.isConfirmed(),
+      })
       .where(
         and(
           eq(schema.ParticipantsTripsTable.participantId, participant.id),

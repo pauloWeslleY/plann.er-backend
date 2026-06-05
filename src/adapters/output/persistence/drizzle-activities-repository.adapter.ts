@@ -2,16 +2,18 @@ import { and, asc, eq } from "drizzle-orm";
 
 import { type Activity } from "@/application/core/activity.entity";
 import {
-  type ActivitiesByTripIdDTO,
-  type ActivityRow,
+  type ActivityDetailDTO,
+  type ActivityDTO,
   type CreateActivityDTO as DataActivityRowDTO,
 } from "@/application/dto/activities.dto";
 import { type ActivityRepositoryPort } from "@/application/ports/activities.repository.port";
 import { database } from "@/resources/database";
 import { schema } from "@/resources/database/schemas";
 
+import { ActivityMapper } from "../mappers/activity.mapper";
+
 export class DrizzleActivitiesRepositoryAdapter implements ActivityRepositoryPort {
-  async create(data: Activity): Promise<ActivityRow> {
+  async create(data: Activity): Promise<ActivityDTO> {
     const [result] = await database
       .insert(schema.ActivitiesTable)
       .values({
@@ -25,7 +27,7 @@ export class DrizzleActivitiesRepositoryAdapter implements ActivityRepositoryPor
     return result;
   }
 
-  async update(data: DataActivityRowDTO): Promise<ActivityRow> {
+  async update(data: DataActivityRowDTO): Promise<ActivityDTO> {
     const [result] = await database
       .update(schema.ActivitiesTable)
       .set({
@@ -40,10 +42,10 @@ export class DrizzleActivitiesRepositoryAdapter implements ActivityRepositoryPor
       )
       .returning();
 
-    return result;
+    return ActivityMapper.toDTO(result);
   }
 
-  async findManyByTripId(tripId: string): Promise<ActivityRow[]> {
+  async findManyByTripId(tripId: string): Promise<ActivityDTO[]> {
     const result = await database
       .select()
       .from(schema.ActivitiesTable)
@@ -67,7 +69,7 @@ export class DrizzleActivitiesRepositoryAdapter implements ActivityRepositoryPor
   async findById(
     id: string,
     tripId: string,
-  ): Promise<ActivitiesByTripIdDTO | null> {
+  ): Promise<ActivityDetailDTO | null> {
     const [result] = await database
       .select({
         id: schema.ActivitiesTable.id,

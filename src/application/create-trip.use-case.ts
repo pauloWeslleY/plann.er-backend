@@ -1,10 +1,9 @@
-import nodemailer from "nodemailer";
 import { v7 as uuidv7 } from "uuid";
 
 import { env } from "@/config/env";
-import { type DateJS } from "@/resources/date-js/datejs";
+import { type IDateService } from "@/resources/date-js/datejs";
 import { BadRequestError } from "@/resources/errors/app-error";
-import { type MailClient } from "@/resources/mail-client/mail-client";
+import { type IMailClient } from "@/resources/mail-client/mail-client";
 
 import { Trip } from "./core/trip.entity";
 import { type CreateTripDTO, TripStatus } from "./dto/trip.dto";
@@ -13,14 +12,25 @@ import { type TripRepositoryPort } from "./ports/trip-repository.port";
 import { type IUnitOfWorkTransaction } from "./ports/unit-of-work-transaction.port";
 
 export class CreateTripUseCase implements CreateTripPort {
+  private readonly tripRepository: TripRepositoryPort;
+  private readonly createTripServiceTransaction: IUnitOfWorkTransaction;
+  private readonly dateService: IDateService;
+  private readonly mail: IMailClient;
+
   constructor(
-    private readonly tripRepository: TripRepositoryPort,
-    private readonly createTripServiceTransaction: IUnitOfWorkTransaction,
-    private readonly service: {
-      date: DateJS;
-      mailClient: MailClient;
+    protected readonly dependecies: {
+      tripRepository: TripRepositoryPort;
+      createTripServiceTransaction: IUnitOfWorkTransaction;
+      date: IDateService;
+      mail: IMailClient;
     },
-  ) {}
+  ) {
+    this.tripRepository = dependecies.tripRepository;
+    this.createTripServiceTransaction =
+      dependecies.createTripServiceTransaction;
+    this.dateService = dependecies.date;
+    this.mail = dependecies.mail;
+  }
 
   async execute(
     input: CreateTripDTO,
@@ -40,8 +50,8 @@ export class CreateTripUseCase implements CreateTripPort {
     }
 
     const tripDate = {
-      startsAt: this.service.date.dayjs(input.startsAt),
-      endsAt: this.service.date.dayjs(input.endsAt),
+      startsAt: this.dateService.date(input.startsAt),
+      endsAt: this.dateService.date(input.endsAt),
     };
 
     if (tripDate.startsAt.isBefore(new Date())) {
@@ -78,8 +88,9 @@ export class CreateTripUseCase implements CreateTripPort {
     const formattedStartDate = tripDate.startsAt.format("LL");
     const formattedEndDate = tripDate.endsAt.format("LL");
     const confirmationLink = `${env.API_BASE_URL}/trips/${trip.id}/confirm`;
+    const mailClient = await this.mail.getMailClient();
 
-    const mail = await this.service.mailClient.sendMail({
+    const mail = await mailClient.sendMail({
       from: {
         name: "Equipe plann.er",
         address: "oi@plann.er",
@@ -104,7 +115,7 @@ export class CreateTripUseCase implements CreateTripPort {
       `.trim(),
     });
 
-    const emailPreviewUrl = nodemailer.getTestMessageUrl(mail);
+    const emailPreviewUrl = this.mail.getMailUrl(mail);
 
     return {
       tripId: trip.id,

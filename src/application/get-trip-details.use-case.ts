@@ -1,4 +1,3 @@
-import { TripMapper } from "@/adapters/output/mappers/trip.mapper";
 import { NotFoundError } from "@/resources/errors/app-error";
 
 import { type TripDTO } from "./dto/trip.dto";
@@ -9,12 +8,12 @@ export class GetTripDetailsUseCase implements GetTripDetailsPort {
   constructor(private readonly tripRepository: TripRepositoryPort) {}
 
   async execute(input: { tripId: string }): Promise<TripDTO> {
-    const trip = await this.tripRepository.findById(input.tripId);
+    const trip = await this.tripRepository.findDetails(input.tripId);
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
     }
 
-    return TripMapper.toDTO(trip);
+    return trip;
   }
 }

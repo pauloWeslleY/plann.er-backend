@@ -1,26 +1,34 @@
-import nodemailer from "nodemailer";
-
 import { env } from "@/config/env";
-import { type DateJS } from "@/resources/date-js/datejs";
+import { type IDateService } from "@/resources/date-js/datejs";
 import { NotFoundError } from "@/resources/errors/app-error";
-import { type MailClient } from "@/resources/mail-client/mail-client";
+import { type IMailClient } from "@/resources/mail-client/mail-client";
 
-import { type CreateInviteDTO } from "./dto/invite.dto";
+import { type CreateInviteDTO, type InviteDTO } from "./dto/invite.dto";
 import { type CreateInvitePort } from "./ports/create-invite.port";
 import { type ParticipantRepositoryPort } from "./ports/participant-repository.port";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
 
 export class CreateInviteUseCase implements CreateInvitePort {
-  constructor(
-    private readonly tripRepository: TripRepositoryPort,
-    private readonly participantRepository: ParticipantRepositoryPort,
-    private readonly service: {
-      date: DateJS;
-      mailClient: MailClient;
-    },
-  ) {}
+  private readonly tripRepository: TripRepositoryPort;
+  private readonly participantRepository: ParticipantRepositoryPort;
+  private readonly dateService: IDateService;
+  private readonly mail: IMailClient;
 
-  async execute(input: CreateInviteDTO): Promise<{ participantId: string }> {
+  constructor(
+    protected readonly dependecies: {
+      tripRepository: TripRepositoryPort;
+      participantRepository: ParticipantRepositoryPort;
+      date: IDateService;
+      mail: IMailClient;
+    },
+  ) {
+    this.tripRepository = dependecies.tripRepository;
+    this.participantRepository = dependecies.participantRepository;
+    this.dateService = dependecies.date;
+    this.mail = dependecies.mail;
+  }
+
+  async execute(input: CreateInviteDTO): Promise<InviteDTO> {
     const trip = await this.tripRepository.findById(input.tripId);
 
     if (!trip) {
@@ -36,14 +44,16 @@ export class CreateInviteUseCase implements CreateInvitePort {
       ],
     });
 
-    const formattedStartDate = this.service.date
-      .dayjs(trip.startsAt)
+    const formattedStartDate = this.dateService
+      .date(trip.startsAt)
       .format("LL");
 
-    const formattedEndDate = this.service.date.dayjs(trip.endsAt).format("LL");
+    const formattedEndDate = this.dateService.date(trip.endsAt).format("LL");
     const confirmationLink = `${env.API_BASE_URL}/trips/${trip.id}/confirm`;
 
-    const mail = await this.service.mailClient.sendMail({
+    const mailClient = await this.mail.getMailClient();
+
+    const mail = await mailClient.sendMail({
       from: {
         name: "Equipe plann.er",
         address: "oi@plann.er",
@@ -65,10 +75,11 @@ export class CreateInviteUseCase implements CreateInvitePort {
       `.trim(),
     });
 
-    console.log(nodemailer.getTestMessageUrl(mail));
+    const mailUrl = this.mail.getMailUrl(mail);
 
     return {
       participantId: participant[0].id,
+      email: typeof mailUrl === "string" ? mailUrl : null,
     };
   }
 }

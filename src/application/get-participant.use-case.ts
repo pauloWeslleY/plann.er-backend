@@ -1,4 +1,3 @@
-import { ParticipantMapper } from "@/adapters/output/mappers/participant.mapper";
 import { NotFoundError } from "@/resources/errors/app-error";
 
 import { type ParticipantDTO } from "./dto/participant.dto";
@@ -11,14 +10,14 @@ export class GetParticipantUseCase implements GetParticipantPort {
   ) {}
 
   async execute(input: { participantId: string }): Promise<ParticipantDTO> {
-    const participant = await this.participantRepository.findById(
+    const participant = await this.participantRepository.findDetailsById(
       input.participantId,
     );
 
     if (!participant) {
-      throw new NotFoundError("Participant not found.");
+      throw new NotFoundError("Participante não encontrado.");
     }
 
-    return ParticipantMapper.toDTO(participant);
+    return participant;
   }
 }

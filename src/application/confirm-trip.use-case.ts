@@ -1,7 +1,7 @@
 import { env } from "@/config/env";
-import { type DateJS } from "@/resources/date-js/datejs";
+import { type IDateService } from "@/resources/date-js/datejs";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
-import { type MailClient } from "@/resources/mail-client/mail-client";
+import { type IMailClient } from "@/resources/mail-client/mail-client";
 
 import { TripStatus } from "./dto/trip.dto";
 import { type ConfirmTripPort } from "./ports/confirm-trip.port";
@@ -9,14 +9,24 @@ import { type ParticipantRepositoryPort } from "./ports/participant-repository.p
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
 
 export class ConfirmTripUseCase implements ConfirmTripPort {
+  private readonly tripRepository: TripRepositoryPort;
+  private readonly participantRepository: ParticipantRepositoryPort;
+  private readonly dateService: IDateService;
+  private readonly mail: IMailClient;
+
   constructor(
-    private readonly participantRepository: ParticipantRepositoryPort,
-    private readonly tripRepository: TripRepositoryPort,
-    private readonly service: {
-      date: DateJS;
-      mailClient: MailClient;
+    protected readonly dependecies: {
+      tripRepository: TripRepositoryPort;
+      participantRepository: ParticipantRepositoryPort;
+      date: IDateService;
+      mail: IMailClient;
     },
-  ) {}
+  ) {
+    this.tripRepository = dependecies.tripRepository;
+    this.participantRepository = dependecies.participantRepository;
+    this.dateService = dependecies.date;
+    this.mail = dependecies.mail;
+  }
 
   async execute(input: { tripId: string }): Promise<{ url: string }> {
     const trip = await this.tripRepository.findUniqueTripAndOwner(input.tripId);
@@ -43,8 +53,8 @@ export class ConfirmTripUseCase implements ConfirmTripPort {
     });
 
     const tripDate = {
-      startsAt: this.service.date.dayjs(trip.startsAt),
-      endsAt: this.service.date.dayjs(trip.endsAt),
+      startsAt: this.dateService.date(trip.startsAt),
+      endsAt: this.dateService.date(trip.endsAt),
     };
 
     if (tripDate.startsAt.isBefore(new Date())) {
@@ -60,12 +70,13 @@ export class ConfirmTripUseCase implements ConfirmTripPort {
     const formattedStartDate = tripDate.startsAt.format("LL");
     const formattedEndDate = tripDate.endsAt.format("LL");
     const participants = await this.participantRepository.findByTripId(trip.id);
+    const mailClient = await this.mail.getMailClient();
 
     await Promise.all(
       participants?.map(async (participant) => {
         const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm`;
 
-        const message = await this.service.mailClient.sendMail({
+        await mailClient.sendMail({
           from: {
             name: "Equipe plann.er",
             address: "oi@plann.er",
@@ -86,8 +97,6 @@ export class ConfirmTripUseCase implements ConfirmTripPort {
           </div>
         `.trim(),
         });
-
-        console.log(message);
       }),
     );
 

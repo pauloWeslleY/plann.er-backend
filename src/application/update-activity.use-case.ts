@@ -1,10 +1,9 @@
-import { ActivityMapper } from "@/adapters/output/mappers/activity.mapper";
-import { type DateJS } from "@/resources/date-js/datejs";
+import { type IDateService } from "@/resources/date-js/datejs";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
 import { Activity } from "./core/activity.entity";
 import {
-  type ActivityRow,
+  type ActivityDTO,
   type CreateActivityDTO as UpdateActivityDTO,
 } from "./dto/activities.dto";
 import { TripStatus } from "./dto/trip.dto";
@@ -14,10 +13,10 @@ import { type UpdateActivityPort } from "./ports/update-activity.port";
 export class UpdateActivityUseCase implements UpdateActivityPort {
   constructor(
     private readonly activityRepository: ActivityRepositoryPort,
-    private readonly service: { date: DateJS },
+    private readonly dateService: IDateService,
   ) {}
 
-  async execute(input: UpdateActivityDTO): Promise<ActivityRow> {
+  async execute(input: UpdateActivityDTO): Promise<ActivityDTO> {
     const alreadyActivity = await this.activityRepository.findById(
       input.id,
       input.tripId,
@@ -34,7 +33,7 @@ export class UpdateActivityUseCase implements UpdateActivityPort {
     }
 
     // TODO: Validar se a data de ocorrência da atividade está dentro do intervalo da viagem
-    const activityDate = this.service.date.dayjs(input.occursAt);
+    const activityDate = this.dateService.date(input.occursAt);
 
     if (activityDate.isBefore(alreadyActivity.trip.startsAt)) {
       throw new BadRequestError(
@@ -60,7 +59,7 @@ export class UpdateActivityUseCase implements UpdateActivityPort {
       occursAt: input.occursAt,
     });
 
-    await this.activityRepository.update(activity);
-    return ActivityMapper.toDTO(activity);
+    const updatedActivity = await this.activityRepository.update(activity);
+    return updatedActivity;
   }
 }

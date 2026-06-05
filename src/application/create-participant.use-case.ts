@@ -44,7 +44,6 @@ export class CreateParticipantUseCase implements CreateParticipantPort {
       );
     }
 
-    const result = await this.participantRepository.create(input);
-    return result;
+    return await this.participantRepository.create(input);
   }
 }

@@ -1,8 +1,11 @@
-import { type schema } from "@/resources/database/schemas";
+import { type ITrip } from "./trip.dto";
 
-import { type TripRow } from "./trip.dto";
-
-export type ActivityRow = typeof schema.ActivitiesTable.$inferSelect;
+export interface ActivityDTO {
+  id: string;
+  title: string;
+  occursAt: Date;
+  tripId: string;
+}
 
 export interface CreateActivityDTO {
   id: string;
@@ -11,14 +14,14 @@ export interface CreateActivityDTO {
   tripId: string;
 }
 
-export interface ActivityDTO {
+export interface ActivitiesListDTO {
   date: Date;
-  activities: ActivityRow[];
+  activities: ActivityDTO[];
 }
 
-export interface ActivitiesByTripIdDTO {
+export interface ActivityDetailDTO {
   id: string;
   title: string;
   occursAt: Date;
-  trip: TripRow;
+  trip: ITrip;
 }

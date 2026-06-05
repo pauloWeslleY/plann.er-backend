@@ -1,7 +1,5 @@
 import { v7 as uuidv7 } from "uuid";
 
-import { LinkMapper } from "@/adapters/output/mappers/link.mapper";
-import { TripMapper } from "@/adapters/output/mappers/trip.mapper";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
 import { type InputLinkDTO } from "./dto/link.dto";
@@ -22,9 +20,7 @@ export class CreateLinkUseCase implements CreateLinkPort {
       throw new NotFoundError("Viagem não encontrada.");
     }
 
-    const tripDomain = TripMapper.toDomain(trip);
-
-    if (!tripDomain.canBeEdited()) {
+    if (!trip.canBeEdited()) {
       throw new BadRequestError(
         "Link não pode ser criado para uma viagem com status cancelado.",
       );
@@ -37,10 +33,8 @@ export class CreateLinkUseCase implements CreateLinkPort {
       url: input.url,
     });
 
-    const linkDTO = LinkMapper.toDTO(link);
-
     return {
-      linkId: linkDTO.id,
+      linkId: link.id,
     };
   }
 }

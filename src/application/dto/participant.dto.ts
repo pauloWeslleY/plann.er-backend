@@ -1,11 +1,19 @@
-import { type schema } from "@/resources/database/schemas";
+export interface IParticipant {
+  id: string;
+  name: string | null;
+  email: string;
+}
 
-type DrizzleParticipant = typeof schema.ParticipantsTable.$inferSelect;
-type DrizzleParticipantTrip = typeof schema.ParticipantsTripsTable.$inferSelect;
+export interface IParticipantTrip {
+  isConfirmed: boolean;
+  tripId: string;
+  participantId: string;
+  isOwner: boolean;
+}
 
 export interface ParticipantRow {
-  participant: DrizzleParticipant;
-  participantTrip: DrizzleParticipantTrip;
+  participant: IParticipant;
+  participantTrip: IParticipantTrip;
 }
 
 export interface ParticipantsRow {

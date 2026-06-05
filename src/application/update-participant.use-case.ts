@@ -1,4 +1,3 @@
-import { ParticipantMapper } from "@/adapters/output/mappers/participant.mapper";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
 import {
@@ -21,12 +20,12 @@ export class UpdateParticipantUseCase implements UpdateParticipantPort {
       throw new BadRequestError("Usuário não informado.");
     }
 
-    const [existingParticipant, trip] = await Promise.all([
+    const [participant, trip] = await Promise.all([
       this.participantRepository.findById(input.participantId),
       this.tripRepository.findByTripAndUserId(input.tripId, input.userId),
     ]);
 
-    if (!existingParticipant) {
+    if (!participant) {
       throw new NotFoundError("Participante não encontrado.");
     }
 
@@ -42,12 +41,11 @@ export class UpdateParticipantUseCase implements UpdateParticipantPort {
       );
     }
 
-    const participantDomain = ParticipantMapper.toDomain(existingParticipant);
-    participantDomain.update(input.name ?? null, input.email);
+    participant.update(input.name ?? null, input.email);
 
     const result = await this.participantRepository.update({
-      participantId: participantDomain.id,
-      tripId: participantDomain.tripId,
+      participantId: participant.id,
+      tripId: participant.tripId,
       email: input.email,
       name: input.name,
     });

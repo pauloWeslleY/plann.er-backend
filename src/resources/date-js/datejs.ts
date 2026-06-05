@@ -6,8 +6,12 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.locale("pt-br");
 dayjs.extend(localizedFormat);
 
-export interface DateJS {
-  dayjs: (date?: dayjs.ConfigType) => dayjs.Dayjs;
+export interface IDateService {
+  date(date?: dayjs.ConfigType): dayjs.Dayjs;
 }
 
-export const dateJS = (date?: dayjs.ConfigType): dayjs.Dayjs => dayjs(date);
+export class DateService implements IDateService {
+  date(date?: dayjs.ConfigType): dayjs.Dayjs {
+    return dayjs(date);
+  }
+}

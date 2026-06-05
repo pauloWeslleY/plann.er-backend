@@ -1,4 +1,3 @@
-import { ParticipantMapper } from "@/adapters/output/mappers/participant.mapper";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
 import { TripStatus } from "./dto/trip.dto";
@@ -31,13 +30,11 @@ export class ConfirmParticipantUseCase implements ConfirmParticipantPort {
       );
     }
 
-    const participantDomain = ParticipantMapper.toDomain(participant);
-    participantDomain.confirmIfNeeded();
-
-    await this.participantRepository.save(participantDomain);
+    participant.confirmIfNeeded();
+    await this.participantRepository.save(participant);
 
     return {
-      tripId: participantDomain.tripId,
+      tripId: participant.tripId,
     };
   }
 }

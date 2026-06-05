@@ -1,4 +1,3 @@
-import { LinkMapper } from "@/adapters/output/mappers/link.mapper";
 import { NotFoundError } from "@/resources/errors/app-error";
 
 import { type LinkDTO } from "./dto/link.dto";
@@ -17,13 +16,6 @@ export class GetLinksUseCase implements GetLinksPort {
       );
     }
 
-    return links.map((link) =>
-      LinkMapper.toDTO({
-        id: link.id,
-        title: link.title,
-        url: link.url,
-        tripId: input.tripId,
-      }),
-    );
+    return links;
   }
 }

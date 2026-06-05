@@ -10,7 +10,8 @@ import {
 
 export interface ParticipantRepositoryPort {
   findByTripId(tripId: string): Promise<ParticipantsRow[]>;
-  findById(id: string): Promise<ParticipantRow | null>;
+  findById(id: string): Promise<Participant | null>;
+  findDetailsById(id: string): Promise<ParticipantDTO | null>;
   findByEmail(email: string): Promise<ParticipantRow["participant"] | null>;
   save(participant: Participant): Promise<void>;
   update(participant: UpdateParticipantDTO): Promise<ParticipantDTO>;

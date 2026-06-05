@@ -1,5 +1,5 @@
-import { type CreateInviteDTO } from "../dto/invite.dto";
+import { type CreateInviteDTO, type InviteDTO } from "../dto/invite.dto";
 
 export interface CreateInvitePort {
-  execute(input: CreateInviteDTO): Promise<{ participantId: string }>;
+  execute(input: CreateInviteDTO): Promise<InviteDTO>;
 }

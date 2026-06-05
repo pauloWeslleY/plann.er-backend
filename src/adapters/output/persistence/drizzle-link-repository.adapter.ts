@@ -3,11 +3,14 @@ import { and, eq } from "drizzle-orm";
 import {
   type CreateLinkDTO,
   type LinkDetailsDTO,
+  type LinkDTO,
   type LinkRow,
 } from "@/application/dto/link.dto";
 import { type LinkRepositoryPort } from "@/application/ports/link.repository.port";
 import { database } from "@/resources/database";
 import { schema } from "@/resources/database/schemas";
+
+import { LinkMapper } from "../mappers/link.mapper";
 
 export class DrizzleLinkRepositoryAdapter implements LinkRepositoryPort {
   async create(data: CreateLinkDTO): Promise<LinkRow> {
@@ -24,17 +27,18 @@ export class DrizzleLinkRepositoryAdapter implements LinkRepositoryPort {
     return result;
   }
 
-  async findManyByTripId(tripId: string): Promise<Omit<LinkRow, "tripId">[]> {
+  async findManyByTripId(tripId: string): Promise<LinkDTO[]> {
     const result = await database
       .select({
         id: schema.LinksTable.id,
         title: schema.LinksTable.title,
         url: schema.LinksTable.url,
+        tripId: schema.LinksTable.tripId,
       })
       .from(schema.LinksTable)
       .where(eq(schema.LinksTable.tripId, tripId));
 
-    return result;
+    return result.map(LinkMapper.toDTO);
   }
 
   async findById(id: string, tripId: string): Promise<LinkRow | null> {
