@@ -30,13 +30,14 @@ app.register(cors, {
 app.register(fastifySwagger, {
   openapi: {
     info: {
-      title: "System API - Stock Manager",
+      title: "API - Plann.er",
       version: "1.0.0",
     },
   },
   transform: jsonSchemaTransform,
 });
 
+app.get("/", async (_, reply) => reply.redirect("/docs"));
 app.register(scalarAPIReference, { routePrefix: "/docs" });
 app.get("/health", async () => "OK");
 
