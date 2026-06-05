@@ -15,6 +15,7 @@ export class FastifyGetParticipantsByTripAdapter {
       {
         schema: {
           tags: ["Trips"],
+          description: "Listar os participantes de uma viagem",
           params: z.object({
             tripId: z.uuid(),
           }),

@@ -13,6 +13,7 @@ export class FastifyConfirmTripAdapter {
       {
         schema: {
           tags: ["Trips"],
+          description: "Confirmar uma viagem",
           params: z.object({
             tripId: z.uuid(),
           }),

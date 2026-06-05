@@ -16,6 +16,7 @@ export class FastifyCreateTripAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Trips"],
+          description: "Criar uma nova viagem",
           body: z.object({
             destination: z.string().min(4),
             startsAt: z.coerce.date(),

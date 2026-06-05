@@ -12,7 +12,9 @@ export class GetLinksUseCase implements GetLinksPort {
     const links = await this.linkRepository.findManyByTripId(input.tripId);
 
     if (!links || links.length === 0) {
-      throw new NotFoundError("Viagem não encontrada.");
+      throw new NotFoundError(
+        "Nenhum link encontrado para a viagem especificada.",
+      );
     }
 
     return links.map((link) =>

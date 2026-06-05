@@ -13,6 +13,7 @@ export class FastifyGetParticipantAdapter {
       {
         schema: {
           tags: ["Participants"],
+          description: "Detalhar um participante por ID",
           params: z.object({
             participantId: z.uuid(),
           }),

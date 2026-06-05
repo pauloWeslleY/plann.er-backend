@@ -8,6 +8,7 @@ import {
 export interface TripRepositoryPort {
   save(data: { isConfirmed: boolean; tripId: string }): Promise<void>;
   update(trip: Trip): Promise<void>;
+  findManyTripsByUserId(userId: string): Promise<TripRow[]>;
   findByDestination(destination: string): Promise<TripRow | null>;
   findById(id: string): Promise<TripRow | null>;
   findUniqueTripAndOwner(tripId: string): Promise<TripDetailsDTO | null>;

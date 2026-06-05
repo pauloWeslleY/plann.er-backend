@@ -15,6 +15,7 @@ export class FastifyCreateInviteAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Invites"],
+          description: "Adicionar um convite a uma viagem",
           params: z.object({
             tripId: z.uuid(),
           }),

@@ -46,6 +46,15 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
     return result ?? null;
   }
 
+  async findManyTripsByUserId(userId: string): Promise<TripRow[]> {
+    const results = await database
+      .select()
+      .from(schema.TripsTable)
+      .where(eq(schema.TripsTable.userId, userId));
+
+    return results;
+  }
+
   async findById(id: string): Promise<TripRow | null> {
     const [result] = await database
       .select()

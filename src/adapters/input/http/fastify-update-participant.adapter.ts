@@ -15,6 +15,7 @@ export class FastifyUpdateParticipantAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Participants"],
+          description: "Atualiza um participante de uma viagem.",
           body: z.object({
             participantId: z.uuid(),
             tripId: z.uuid(),

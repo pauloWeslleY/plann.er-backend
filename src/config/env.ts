@@ -1,7 +1,6 @@
 import z from "zod";
 
 const envSchema = z.object({
-  DATABASE_URL: z.url(),
   API_BASE_URL: z.url(),
   WEB_BASE_URL: z.url(),
   POSTGRES_URL: z.url(),

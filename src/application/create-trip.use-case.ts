@@ -7,7 +7,7 @@ import { BadRequestError } from "@/resources/errors/app-error";
 import { type MailClient } from "@/resources/mail-client/mail-client";
 
 import { Trip } from "./core/trip.entity";
-import { type CreateTripDTO } from "./dto/trip.dto";
+import { type CreateTripDTO, TripStatus } from "./dto/trip.dto";
 import { type CreateTripPort } from "./ports/create-trip.port";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
 import { type IUnitOfWorkTransaction } from "./ports/unit-of-work-transaction.port";
@@ -61,6 +61,7 @@ export class CreateTripUseCase implements CreateTripPort {
       startsAt: tripDate.startsAt.toDate(),
       endsAt: tripDate.endsAt.toDate(),
       userId: input.userId,
+      status: TripStatus.PLANNED,
     });
 
     await this.createTripServiceTransaction.transaction({

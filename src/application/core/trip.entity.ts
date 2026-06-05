@@ -38,6 +38,10 @@ export class Trip {
     return this.props.userId;
   }
 
+  get status(): TripStatus {
+    return this.props.status as TripStatus;
+  }
+
   canBeEdited(status?: TripStatus): boolean {
     const validStatuses = new Set([TripStatus.PLANNED, TripStatus.CONFIRMED]);
     return validStatuses.has(status ?? (this.props.status as TripStatus));

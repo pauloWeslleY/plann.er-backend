@@ -15,6 +15,7 @@ export class FastifyCreateActivityAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Activities"],
+          description: "Adicionar uma nova atividade a uma viagem",
           params: z.object({
             tripId: z.uuid(),
           }),

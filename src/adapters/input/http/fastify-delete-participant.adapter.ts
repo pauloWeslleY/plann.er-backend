@@ -15,6 +15,7 @@ export class FastifyDeleteParticipantAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Participants"],
+          description: "Deletar um participante de uma viagem",
           querystring: z.object({
             tripId: z.uuid(),
             participantId: z.uuid(),

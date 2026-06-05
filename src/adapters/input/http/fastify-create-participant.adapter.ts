@@ -15,6 +15,7 @@ export class FastifyCreateParticipantAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Participants"],
+          description: "Adicionar participantes a uma viagem",
           body: z.object({
             tripId: z.uuid(),
             participants: z.array(

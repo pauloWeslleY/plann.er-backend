@@ -15,6 +15,7 @@ export class FastifyDeleteLinkAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Links"],
+          description: "Deletar um link de uma viagem",
           querystring: z.object({
             tripId: z.uuid(),
             linkId: z.uuid(),

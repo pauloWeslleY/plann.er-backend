@@ -15,6 +15,7 @@ export class FastifyCreateLinkAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Links"],
+          description: "Adicionar um link a uma viagem",
           params: z.object({
             tripId: z.uuid(),
           }),

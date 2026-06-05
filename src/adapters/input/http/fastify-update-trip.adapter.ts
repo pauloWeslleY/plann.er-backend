@@ -1,5 +1,5 @@
-import type { FastifyInstance } from "fastify";
-import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { type FastifyInstance } from "fastify";
+import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { type UpdateTripPort } from "@/application/ports/update-trip.port";
@@ -11,15 +11,14 @@ export class FastifyUpdateTripAdapter {
 
   register(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().put(
-      "/trips/:tripId",
+      "/trips",
       {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Trips"],
-          params: z.object({
-            tripId: z.uuid(),
-          }),
+          description: "Atualiza os dados de uma viagem.",
           body: z.object({
+            tripId: z.uuid(),
             destination: z.string().min(4),
             startsAt: z.coerce.date(),
             endsAt: z.coerce.date(),
@@ -27,11 +26,7 @@ export class FastifyUpdateTripAdapter {
         },
       },
       async (request, reply) => {
-        const result = await this.updateTrip.execute({
-          ...request.body,
-          tripId: request.params.tripId,
-        });
-
+        const result = await this.updateTrip.execute(request.body);
         return reply.redirect(`${env.WEB_BASE_URL}/trips/${result.tripId}`);
       },
     );

@@ -16,14 +16,19 @@ export class FastifyConfirmParticipantAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Participants"],
+          description: "Confirmar a presença de um participante em uma viagem",
           params: z.object({
             participantId: z.uuid(),
+          }),
+          querystring: z.object({
+            tripId: z.uuid(),
           }),
         },
       },
       async (request, reply) => {
         const result = await this.confirmParticipant.execute({
           participantId: request.params.participantId,
+          tripId: request.query.tripId,
         });
 
         return reply.redirect(`${env.WEB_BASE_URL}/trips/${result.tripId}`);

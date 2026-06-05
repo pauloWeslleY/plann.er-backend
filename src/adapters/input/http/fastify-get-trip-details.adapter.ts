@@ -13,6 +13,7 @@ export class FastifyGetTripDetailsAdapter {
       {
         schema: {
           tags: ["Trips"],
+          description: "Detalhar uma viagem",
           params: z.object({
             tripId: z.uuid(),
           }),

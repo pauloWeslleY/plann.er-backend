@@ -15,6 +15,7 @@ export class FastifyGetActivitiesAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Activities"],
+          description: "Listar todas as atividades de uma viagem específica",
           params: z.object({
             tripId: z.uuid(),
           }),

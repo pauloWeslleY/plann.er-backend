@@ -15,6 +15,7 @@ export class FastifyGetLinksAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Links"],
+          description: "Listar todos os links de uma viagem específica",
           params: z.object({
             tripId: z.uuid(),
           }),

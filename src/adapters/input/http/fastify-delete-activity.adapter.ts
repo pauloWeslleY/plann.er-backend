@@ -15,7 +15,8 @@ export class FastifyDeleteActivityAdapter {
         preHandler: [authMiddleware],
         schema: {
           tags: ["Activities"],
-          querystring: z.object({
+          description: "Deletar uma atividade de uma viagem",
+          body: z.object({
             tripId: z.uuid(),
             activityId: z.uuid(),
           }),
@@ -26,8 +27,8 @@ export class FastifyDeleteActivityAdapter {
       },
       async (request, reply) => {
         await this.deleteActivity.execute({
-          id: request.query.activityId,
-          tripId: request.query.tripId,
+          id: request.body.activityId,
+          tripId: request.body.tripId,
         });
 
         return reply
