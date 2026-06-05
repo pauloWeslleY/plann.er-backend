@@ -9,7 +9,7 @@ const ONE_HOUR = 60;
 
 export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
-  baseURL: env.BETTER_AUTH_URL,
+  baseURL: env.API_BASE_URL,
   trustedOrigins: [env.WEB_BASE_URL || "http://localhost:5173"],
   database: drizzleAdapter(database, {
     provider: "pg",
