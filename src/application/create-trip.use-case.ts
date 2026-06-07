@@ -87,7 +87,7 @@ export class CreateTripUseCase implements CreateTripPort {
 
     const formattedStartDate = tripDate.startsAt.format("LL");
     const formattedEndDate = tripDate.endsAt.format("LL");
-    const confirmationLink = `${env.API_BASE_URL}/trips/${trip.id}/confirm`;
+    const confirmationLink = `${env.WEB_BASE_URL}/trips/${trip.id}/confirm`;
     const mailClient = await this.mail.getMailClient();
 
     const mail = await mailClient.sendMail({
