@@ -1,7 +1,7 @@
 import { type IDateService } from "@/resources/date-js/datejs";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
-import { type UpdateTripDTO } from "./dto/trip.dto";
+import { type TripDTO, type UpdateTripDTO } from "./dto/trip.dto";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
 import { type UpdateTripPort } from "./ports/update-trip.port";
 
@@ -11,7 +11,7 @@ export class UpdateTripUseCase implements UpdateTripPort {
     private readonly dateService: IDateService,
   ) {}
 
-  async execute(input: UpdateTripDTO): Promise<{ tripId: string }> {
+  async execute(input: UpdateTripDTO): Promise<{ trip: TripDTO }> {
     const trip = await this.tripRepository.findById(input.tripId);
 
     if (!trip) {
@@ -45,10 +45,10 @@ export class UpdateTripUseCase implements UpdateTripPort {
       tripDates.endsAt.toDate(),
     );
 
-    await this.tripRepository.update(trip);
+    const updatedTrip = await this.tripRepository.update(trip);
 
     return {
-      tripId: trip.id,
+      trip: updatedTrip,
     };
   }
 }

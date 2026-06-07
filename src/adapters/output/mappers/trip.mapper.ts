@@ -13,19 +13,6 @@ export class TripMapper {
     });
   }
 
-  static toPersistence(trip: ITrip) {
-    return {
-      id: trip.id,
-      userId: trip.userId,
-      destination: trip.destination,
-      startsAt: trip.startsAt,
-      endsAt: trip.endsAt,
-      isConfirmed: trip.isConfirmed,
-      createdAt: trip.createdAt,
-      updatedAt: trip.updatedAt,
-    };
-  }
-
   static toDTO(trip: ITrip): TripDTO {
     return {
       id: trip.id,
@@ -33,6 +20,7 @@ export class TripMapper {
       destination: trip.destination,
       startsAt: trip.startsAt,
       endsAt: trip.endsAt,
+      status: trip.status,
     };
   }
 }

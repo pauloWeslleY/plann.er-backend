@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 
 import { type Trip } from "@/application/core/trip.entity";
 import {
+  type TripAndOwnerDTO,
   type TripDetailsDTO,
   type TripDTO,
   type TripWithOwnerStatusRow,
@@ -24,7 +25,9 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
     return result ?? null;
   }
 
-  async findUniqueTripAndOwner(tripId: string): Promise<TripDetailsDTO | null> {
+  async findUniqueTripAndOwner(
+    tripId: string,
+  ): Promise<TripAndOwnerDTO | null> {
     const [result] = await database
       .select({
         id: schema.TripsTable.id,
@@ -72,7 +75,7 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
     return TripMapper.toDomain(result);
   }
 
-  async findDetails(id: string): Promise<TripDTO | null> {
+  async findDetails(id: string): Promise<TripDetailsDTO | null> {
     const [result] = await database
       .select({
         id: schema.TripsTable.id,
@@ -112,15 +115,18 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
     return result;
   }
 
-  async update(trip: Trip): Promise<void> {
-    await database
+  async update(trip: Trip): Promise<TripDTO> {
+    const [result] = await database
       .update(schema.TripsTable)
       .set({
         destination: trip.destination,
         startsAt: trip.startsAt,
         endsAt: trip.endsAt,
       })
-      .where(eq(schema.TripsTable.id, trip.id));
+      .where(eq(schema.TripsTable.id, trip.id))
+      .returning();
+
+    return TripMapper.toDTO(result);
   }
 
   async save(data: { isConfirmed: boolean; tripId: string }): Promise<void> {

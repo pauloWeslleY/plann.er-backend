@@ -3,7 +3,6 @@ import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { type UpdateTripPort } from "@/application/ports/update-trip.port";
-import { env } from "@/config/env";
 import { authMiddleware } from "@/resources/middleware/auth-middleware";
 
 export class FastifyUpdateTripAdapter {
@@ -23,11 +22,21 @@ export class FastifyUpdateTripAdapter {
             startsAt: z.coerce.date(),
             endsAt: z.coerce.date(),
           }),
+          response: {
+            201: z.object({
+              id: z.string(),
+              destination: z.string(),
+              startsAt: z.date(),
+              endsAt: z.date(),
+              isConfirmed: z.boolean(),
+              status: z.enum(["PLANNED", "CONFIRMED", "CANCELLED"]),
+            }),
+          },
         },
       },
       async (request, reply) => {
         const result = await this.updateTrip.execute(request.body);
-        return reply.redirect(`${env.WEB_BASE_URL}/trips/${result.tripId}`);
+        return reply.status(201).send(result.trip);
       },
     );
   }
