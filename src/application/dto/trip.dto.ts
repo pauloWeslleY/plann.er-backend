@@ -41,6 +41,24 @@ export interface TripDetailsDTO {
   };
 }
 
+export interface TripFullDetailsDTO {
+  id: string;
+  destination: string;
+  startsAt: Date;
+  endsAt: Date;
+  isConfirmed: boolean;
+  status: TripStatusType;
+  userId: string;
+  totalParticipants: number;
+  totalLinks: number;
+  totalActivities: number;
+  owner: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
+}
+
 export interface TripWithOwnerStatusRow {
   id: string;
   destination: string;
@@ -62,6 +80,10 @@ export interface TripAndOwnerDTO {
   status: TripStatusType;
 }
 
+export interface ManyTripsByUserDTO extends ITrip {
+  totalParticipants: number;
+}
+
 export interface CreateTripDTO {
   userId?: string;
   destination: string;
@@ -77,4 +99,9 @@ export interface UpdateTripDTO {
   destination: string;
   startsAt: Date;
   endsAt: Date;
+}
+
+export interface UpdateStatusTripDTO {
+  tripId: string;
+  status: TripStatusType;
 }

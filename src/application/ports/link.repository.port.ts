@@ -1,5 +1,5 @@
+import { type Link } from "../core/link.entity";
 import {
-  type CreateLinkDTO,
   type DeleteLinkDTO,
   type LinkDetailsDTO,
   type LinkDTO,
@@ -7,7 +7,7 @@ import {
 } from "../dto/link.dto";
 
 export interface LinkRepositoryPort {
-  create(data: CreateLinkDTO): Promise<LinkRow>;
+  create(data: Link): Promise<LinkRow>;
   delete(data: DeleteLinkDTO): Promise<void>;
   findManyByTripId(tripId: string): Promise<LinkDTO[]>;
   findById(id: string, tripId: string): Promise<LinkRow | null>;

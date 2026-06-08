@@ -2,7 +2,8 @@ import { v7 as uuidv7 } from "uuid";
 
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
-import { type InputLinkDTO } from "./dto/link.dto";
+import { Link } from "./core/link.entity";
+import { type InputLinkDTO, type LinkRow } from "./dto/link.dto";
 import { type CreateLinkPort } from "./ports/create-link.port";
 import { type LinkRepositoryPort } from "./ports/link.repository.port";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
@@ -13,7 +14,7 @@ export class CreateLinkUseCase implements CreateLinkPort {
     private readonly linkRepository: LinkRepositoryPort,
   ) {}
 
-  async execute(input: InputLinkDTO): Promise<{ linkId: string }> {
+  async execute(input: InputLinkDTO): Promise<LinkRow> {
     const trip = await this.tripRepository.findById(input.tripId);
 
     if (!trip) {
@@ -26,15 +27,14 @@ export class CreateLinkUseCase implements CreateLinkPort {
       );
     }
 
-    const link = await this.linkRepository.create({
-      id: uuidv7(),
+    const linkId = uuidv7();
+
+    const link = Link.create(linkId, {
       tripId: trip.id,
       title: input.title,
       url: input.url,
     });
 
-    return {
-      linkId: link.id,
-    };
+    return await this.linkRepository.create(link);
   }
 }

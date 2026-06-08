@@ -24,7 +24,10 @@ export class FastifyCreateActivityAdapter {
             occursAt: z.coerce.date(),
           }),
           201: z.object({
-            activityId: z.string(),
+            id: z.uuid(),
+            title: z.string(),
+            occursAt: z.date(),
+            tripId: z.uuid(),
           }),
         },
       },

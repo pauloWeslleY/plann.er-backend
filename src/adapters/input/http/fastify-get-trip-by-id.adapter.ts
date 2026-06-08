@@ -2,18 +2,18 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
-import { type GetTripDetailsPort } from "@/application/ports/get-trip-details.port";
+import { type GetTripByIdPort } from "@/application/ports/get-trip-by-id.port";
 
-export class FastifyGetTripDetailsAdapter {
-  constructor(private readonly getTripDetails: GetTripDetailsPort) {}
+export class FastifyGetTripByIdAdapter {
+  constructor(private readonly getTripById: GetTripByIdPort) {}
 
   register(app: FastifyInstance) {
     app.withTypeProvider<ZodTypeProvider>().get(
-      "/trips/:tripId",
+      "/trips/:tripId/details",
       {
         schema: {
           tags: ["Trips"],
-          description: "Detalhar uma viagem",
+          description: "Detalhes completos de uma viagem específica.",
           params: z.object({
             tripId: z.uuid(),
           }),
@@ -26,6 +26,9 @@ export class FastifyGetTripDetailsAdapter {
               isConfirmed: z.boolean(),
               status: z.enum(["PLANNED", "CONFIRMED", "CANCELLED"]),
               userId: z.string(),
+              totalParticipants: z.number(),
+              totalLinks: z.number(),
+              totalActivities: z.number(),
               owner: z.object({
                 id: z.uuid(),
                 name: z.string().nullable(),
@@ -36,7 +39,7 @@ export class FastifyGetTripDetailsAdapter {
         },
       },
       async (request, reply) => {
-        const result = await this.getTripDetails.execute({
+        const result = await this.getTripById.execute({
           tripId: request.params.tripId,
         });
 

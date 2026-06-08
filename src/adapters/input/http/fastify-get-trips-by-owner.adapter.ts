@@ -28,6 +28,7 @@ export class FastifyGetTripsByOwnerAdapter {
                 status: z.enum(["PLANNED", "CANCELLED", "CONFIRMED"]),
                 createdAt: z.date(),
                 updatedAt: z.date().nullable(),
+                totalParticipants: z.number(),
               }),
             ),
           },

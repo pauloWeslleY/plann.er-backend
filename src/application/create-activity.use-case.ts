@@ -4,7 +4,7 @@ import { type DateService } from "@/resources/date-js/datejs";
 import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
 import { Activity } from "./core/activity.entity";
-import { type CreateActivityDTO } from "./dto/activities.dto";
+import { type ActivityDTO, type CreateActivityDTO } from "./dto/activities.dto";
 import { type ActivityRepositoryPort } from "./ports/activities.repository.port";
 import { type CreateActivityPort } from "./ports/create-activity.port";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
@@ -16,9 +16,7 @@ export class CreateActivityUseCase implements CreateActivityPort {
     private readonly dateService: DateService,
   ) {}
 
-  async execute(
-    input: Omit<CreateActivityDTO, "id">,
-  ): Promise<{ activityId: string }> {
+  async execute(input: Omit<CreateActivityDTO, "id">): Promise<ActivityDTO> {
     const trip = await this.tripRepository.findById(input.tripId);
 
     if (!trip) {
@@ -31,33 +29,30 @@ export class CreateActivityUseCase implements CreateActivityPort {
       );
     }
 
-    const tripDate = {
-      startsAt: this.dateService.date(trip.startsAt),
-      endsAt: this.dateService.date(trip.endsAt),
-    };
+    const activityDate = this.dateService.date(input.occursAt);
 
-    if (tripDate.startsAt.isBefore(new Date())) {
+    if (activityDate.isBefore(trip.startsAt)) {
       throw new BadRequestError(
-        "Começo da viagem deve ser em uma data futura.",
+        "Início da atividade deve ser após o início da viagem.",
       );
     }
 
-    if (tripDate.endsAt.isBefore(tripDate.startsAt)) {
-      throw new BadRequestError("Fim da viagem deve ser após o início.");
+    if (activityDate.isAfter(trip.endsAt)) {
+      throw new BadRequestError(
+        "Fim da atividade deve ser antes do fim da viagem.",
+      );
     }
 
     const activityId = uuidv7();
 
     const activity = Activity.create(activityId, {
       title: input.title,
-      occursAt: tripDate.startsAt.toDate(),
+      occursAt: activityDate.toDate(),
       tripId: input.tripId,
     });
 
     await this.activityRepository.create(activity);
 
-    return {
-      activityId: activity.id,
-    };
+    return activity;
   }
 }

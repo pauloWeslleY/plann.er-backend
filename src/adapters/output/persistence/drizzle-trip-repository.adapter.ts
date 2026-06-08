@@ -1,10 +1,14 @@
-import { and, eq } from "drizzle-orm";
+import { and, count, countDistinct, eq } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
 import { type Trip } from "@/application/core/trip.entity";
 import {
+  type ManyTripsByUserDTO,
   type TripAndOwnerDTO,
   type TripDetailsDTO,
   type TripDTO,
+  type TripFullDetailsDTO,
+  type TripStatusType,
   type TripWithOwnerStatusRow,
 } from "@/application/dto/trip.dto";
 import { type TripRepositoryPort } from "@/application/ports/trip-repository.port";
@@ -21,6 +25,14 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
       .select()
       .from(schema.TripsTable)
       .where(eq(schema.TripsTable.destination, destination));
+
+    return result ?? null;
+  }
+  async findByStartDate(startDate: Date): Promise<TripRow | null> {
+    const [result] = await database
+      .select()
+      .from(schema.TripsTable)
+      .where(eq(schema.TripsTable.startsAt, startDate));
 
     return result ?? null;
   }
@@ -53,11 +65,27 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
     return result ?? null;
   }
 
-  async findManyTripsByUserId(userId: string): Promise<TripRow[]> {
+  async findManyTripsByUserId(userId: string): Promise<ManyTripsByUserDTO[]> {
     const results = await database
-      .select()
+      .select({
+        id: schema.TripsTable.id,
+        destination: schema.TripsTable.destination,
+        startsAt: schema.TripsTable.startsAt,
+        endsAt: schema.TripsTable.endsAt,
+        isConfirmed: schema.TripsTable.isConfirmed,
+        status: schema.TripsTable.status,
+        createdAt: schema.TripsTable.createdAt,
+        updatedAt: schema.TripsTable.updatedAt,
+        userId: schema.TripsTable.userId,
+        totalParticipants: count(schema.ParticipantsTripsTable.participantId),
+      })
       .from(schema.TripsTable)
-      .where(eq(schema.TripsTable.userId, userId));
+      .leftJoin(
+        schema.ParticipantsTripsTable,
+        eq(schema.ParticipantsTripsTable.tripId, schema.TripsTable.id),
+      )
+      .where(eq(schema.TripsTable.userId, userId))
+      .groupBy(schema.TripsTable.id);
 
     return results;
   }
@@ -73,6 +101,73 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
     }
 
     return TripMapper.toDomain(result);
+  }
+
+  async findFullDetails(id: string): Promise<TripFullDetailsDTO | null> {
+    const ownerParticipantsTrip = alias(
+      schema.ParticipantsTripsTable,
+      "owner_participants_trip",
+    );
+
+    const participantsTrip = alias(
+      schema.ParticipantsTripsTable,
+      "participants_trip",
+    );
+
+    const [result] = await database
+      .select({
+        id: schema.TripsTable.id,
+        destination: schema.TripsTable.destination,
+        startsAt: schema.TripsTable.startsAt,
+        endsAt: schema.TripsTable.endsAt,
+        status: schema.TripsTable.status,
+        isConfirmed: ownerParticipantsTrip.isConfirmed,
+        userId: schema.TripsTable.userId,
+        totalParticipants: countDistinct(participantsTrip.participantId),
+        totalLinks: countDistinct(schema.LinksTable.id),
+        totalActivities: countDistinct(schema.ActivitiesTable.id),
+        owner: {
+          id: schema.ParticipantsTable.id,
+          name: schema.ParticipantsTable.name,
+          email: schema.ParticipantsTable.email,
+        },
+      })
+      .from(schema.TripsTable)
+      .innerJoin(
+        ownerParticipantsTrip,
+        and(
+          eq(ownerParticipantsTrip.tripId, schema.TripsTable.id),
+          eq(ownerParticipantsTrip.isOwner, true),
+        ),
+      )
+      .innerJoin(
+        schema.ParticipantsTable,
+        eq(schema.ParticipantsTable.id, ownerParticipantsTrip.participantId),
+      )
+      .leftJoin(
+        participantsTrip,
+        eq(participantsTrip.tripId, schema.TripsTable.id),
+      )
+      .leftJoin(
+        schema.LinksTable,
+        eq(schema.LinksTable.tripId, schema.TripsTable.id),
+      )
+      .leftJoin(
+        schema.ActivitiesTable,
+        eq(schema.ActivitiesTable.tripId, schema.TripsTable.id),
+      )
+      .groupBy(
+        schema.TripsTable.id,
+        schema.ParticipantsTable.id,
+        ownerParticipantsTrip.isConfirmed,
+      )
+      .where(eq(schema.TripsTable.id, id));
+
+    if (!result) {
+      return null;
+    }
+
+    return result;
   }
 
   async findDetails(id: string): Promise<TripDetailsDTO | null> {
@@ -124,6 +219,16 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
         endsAt: trip.endsAt,
       })
       .where(eq(schema.TripsTable.id, trip.id))
+      .returning();
+
+    return TripMapper.toDTO(result);
+  }
+
+  async updateStatus(tripId: string, status: TripStatusType): Promise<TripDTO> {
+    const [result] = await database
+      .update(schema.TripsTable)
+      .set({ status })
+      .where(eq(schema.TripsTable.id, tripId))
       .returning();
 
     return TripMapper.toDTO(result);

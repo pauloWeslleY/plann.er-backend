@@ -1,5 +1,5 @@
-import { type InputLinkDTO } from "../dto/link.dto";
+import { type InputLinkDTO, type LinkRow } from "../dto/link.dto";
 
 export interface CreateLinkPort {
-  execute(input: InputLinkDTO): Promise<{ linkId: string }>;
+  execute(input: InputLinkDTO): Promise<LinkRow>;
 }

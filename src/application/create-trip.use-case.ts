@@ -35,12 +35,17 @@ export class CreateTripUseCase implements CreateTripPort {
   async execute(
     input: CreateTripDTO,
   ): Promise<{ tripId: string; emailSent: boolean }> {
-    const existingTrips = await this.tripRepository.findByDestination(
-      input.destination,
+    const tripDate = {
+      startsAt: this.dateService.date(input.startsAt),
+      endsAt: this.dateService.date(input.endsAt),
+    };
+
+    const existingTrips = await this.tripRepository.findByStartDate(
+      tripDate.startsAt.toDate(),
     );
 
     if (existingTrips) {
-      throw new BadRequestError("Viagem já existe para este destino.");
+      throw new BadRequestError("Já existe uma viagem para esta data.");
     }
 
     if (!input.userId) {
@@ -48,11 +53,6 @@ export class CreateTripUseCase implements CreateTripPort {
         "Usuário deve estar autenticado para criar uma viagem.",
       );
     }
-
-    const tripDate = {
-      startsAt: this.dateService.date(input.startsAt),
-      endsAt: this.dateService.date(input.endsAt),
-    };
 
     if (tripDate.startsAt.isBefore(new Date())) {
       throw new BadRequestError(

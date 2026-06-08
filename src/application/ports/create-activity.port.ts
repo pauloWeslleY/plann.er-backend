@@ -1,7 +1,8 @@
-import { type CreateActivityDTO } from "../dto/activities.dto";
+import {
+  type ActivityDTO,
+  type CreateActivityDTO,
+} from "../dto/activities.dto";
 
 export interface CreateActivityPort {
-  execute(
-    input: Omit<CreateActivityDTO, "id">,
-  ): Promise<{ activityId: string }>;
+  execute(input: Omit<CreateActivityDTO, "id">): Promise<ActivityDTO>;
 }

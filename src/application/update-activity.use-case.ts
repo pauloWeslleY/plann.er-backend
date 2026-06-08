@@ -59,7 +59,6 @@ export class UpdateActivityUseCase implements UpdateActivityPort {
       occursAt: input.occursAt,
     });
 
-    const updatedActivity = await this.activityRepository.update(activity);
-    return updatedActivity;
+    return await this.activityRepository.update(activity);
   }
 }

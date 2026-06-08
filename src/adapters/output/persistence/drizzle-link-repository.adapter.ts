@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 
+import { type Link } from "@/application/core/link.entity";
 import {
-  type CreateLinkDTO,
   type LinkDetailsDTO,
   type LinkDTO,
   type LinkRow,
@@ -13,7 +13,7 @@ import { schema } from "@/resources/database/schemas";
 import { LinkMapper } from "../mappers/link.mapper";
 
 export class DrizzleLinkRepositoryAdapter implements LinkRepositoryPort {
-  async create(data: CreateLinkDTO): Promise<LinkRow> {
+  async create(data: Link): Promise<LinkRow> {
     const [result] = await database
       .insert(schema.LinksTable)
       .values({
