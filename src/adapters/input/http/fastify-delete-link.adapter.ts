@@ -20,9 +20,11 @@ export class FastifyDeleteLinkAdapter {
             tripId: z.uuid(),
             linkId: z.uuid(),
           }),
-          200: z.object({
-            message: z.string(),
-          }),
+          response: {
+            200: z.object({
+              message: z.string(),
+            }),
+          },
         },
       },
       async (request, reply) => {

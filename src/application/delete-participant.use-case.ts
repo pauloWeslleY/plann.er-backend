@@ -15,12 +15,22 @@ export class DeleteParticipantUseCase implements DeleteParticipantPort {
     participantId: string;
     tripId: string;
   }): Promise<void> {
-    const [existingTrip, existingParticipant] = await Promise.all([
+    const [trip, participants] = await Promise.all([
       this.tripRepository.findById(input.tripId),
       this.participantRepository.findByTripId(input.tripId),
     ]);
 
-    const participantToDelete = existingParticipant.some(
+    const hasParticipantsOwner = participants.find(
+      (participant) => participant.id === input.participantId,
+    );
+
+    if (hasParticipantsOwner && hasParticipantsOwner.is_owner) {
+      throw new BadRequestError(
+        "Não é possível deletar o participante proprietário da viagem.",
+      );
+    }
+
+    const participantToDelete = participants.some(
       (participant) => participant.id === input.participantId,
     );
 
@@ -28,11 +38,11 @@ export class DeleteParticipantUseCase implements DeleteParticipantPort {
       throw new BadRequestError("Participante não encontrado.");
     }
 
-    if (!existingTrip) {
+    if (!trip) {
       throw new BadRequestError("Viagem não encontrada.");
     }
 
-    if (existingTrip.status === TripStatus.CANCELLED) {
+    if (trip.status === TripStatus.CANCELLED) {
       throw new BadRequestError(
         "Não é possível deletar um participante de uma viagem cancelada.",
       );

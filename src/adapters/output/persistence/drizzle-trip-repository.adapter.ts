@@ -163,6 +163,8 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
       )
       .where(eq(schema.TripsTable.id, id));
 
+    console.log("[findFullDetails] => ", result);
+
     if (!result) {
       return null;
     }

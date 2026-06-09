@@ -22,9 +22,11 @@ export class FastifyCreateInviteAdapter {
           body: z.object({
             email: z.email(),
           }),
-          201: z.object({
-            activityId: z.string(),
-          }),
+          response: {
+            201: z.object({
+              activityId: z.string(),
+            }),
+          },
         },
       },
       async (request, reply) => {

@@ -23,12 +23,14 @@ export class FastifyCreateLinkAdapter {
             title: z.string().min(4),
             url: z.url(),
           }),
-          201: z.object({
-            id: z.uuid(),
-            title: z.string().min(4),
-            url: z.url(),
-            tripId: z.uuid(),
-          }),
+          response: {
+            201: z.object({
+              id: z.uuid(),
+              title: z.string().min(4),
+              url: z.url(),
+              tripId: z.uuid(),
+            }),
+          },
         },
       },
       async (request, reply) => {

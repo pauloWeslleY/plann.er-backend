@@ -15,12 +15,20 @@ export class GetParticipantsByTripUseCase implements GetParticipantsByTripPort {
     );
 
     if (!participants || participants.length === 0) {
-      throw new NotFoundError("Participants not found.");
+      throw new NotFoundError(
+        "Nenhum participante encontrado para a viagem informada",
+      );
     }
 
-    return participants.map((participant) => ({
-      ...participant,
-      isConfirmed: participant.is_confirmed,
-    }));
+    const participantsByTrip = participants.map<GetParticipantDTO>(
+      (participant) => ({
+        id: participant.id,
+        name: participant.name,
+        email: participant.email,
+        isConfirmed: participant.is_confirmed,
+      }),
+    );
+
+    return participantsByTrip;
   }
 }

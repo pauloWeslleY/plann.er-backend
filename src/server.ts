@@ -36,9 +36,9 @@ app.register(fastifySwagger, {
   },
   transform: jsonSchemaTransform,
 });
+app.register(scalarAPIReference, { routePrefix: "/docs" });
 
 app.get("/", async (_, reply) => reply.redirect("/docs"));
-app.register(scalarAPIReference, { routePrefix: "/docs" });
 app.get("/health", async () => "OK");
 
 app.setValidatorCompiler(validatorCompiler);

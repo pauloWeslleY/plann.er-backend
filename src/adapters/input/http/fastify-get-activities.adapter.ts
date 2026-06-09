@@ -19,13 +19,21 @@ export class FastifyGetActivitiesAdapter {
           params: z.object({
             tripId: z.uuid(),
           }),
-          200: z.array(
-            z.object({
-              id: z.string(),
-              title: z.string(),
-              occursAt: z.coerce.date(),
-            }),
-          ),
+          response: {
+            200: z.array(
+              z.object({
+                date: z.date(),
+                activities: z.array(
+                  z.object({
+                    id: z.uuid(),
+                    title: z.string(),
+                    occursAt: z.date(),
+                    tripId: z.uuid(),
+                  }),
+                ),
+              }),
+            ),
+          },
         },
       },
       async (request, reply) => {

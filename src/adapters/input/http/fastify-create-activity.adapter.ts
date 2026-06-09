@@ -23,12 +23,14 @@ export class FastifyCreateActivityAdapter {
             title: z.string().min(4),
             occursAt: z.coerce.date(),
           }),
-          201: z.object({
-            id: z.uuid(),
-            title: z.string(),
-            occursAt: z.date(),
-            tripId: z.uuid(),
-          }),
+          response: {
+            201: z.object({
+              id: z.uuid(),
+              title: z.string(),
+              occursAt: z.date(),
+              tripId: z.uuid(),
+            }),
+          },
         },
       },
       async (request, reply) => {

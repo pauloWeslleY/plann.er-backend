@@ -20,9 +20,11 @@ export class FastifyDeleteActivityAdapter {
             tripId: z.uuid(),
             activityId: z.uuid(),
           }),
-          200: z.object({
-            message: z.string(),
-          }),
+          response: {
+            200: z.object({
+              message: z.string(),
+            }),
+          },
         },
       },
       async (request, reply) => {

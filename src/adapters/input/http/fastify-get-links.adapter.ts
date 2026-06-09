@@ -19,13 +19,15 @@ export class FastifyGetLinksAdapter {
           params: z.object({
             tripId: z.uuid(),
           }),
-          200: z.array(
-            z.object({
-              id: z.string(),
-              title: z.string(),
-              url: z.url(),
-            }),
-          ),
+          response: {
+            200: z.array(
+              z.object({
+                id: z.string(),
+                title: z.string(),
+                url: z.url(),
+              }),
+            ),
+          },
         },
       },
       async (request, reply) => {
