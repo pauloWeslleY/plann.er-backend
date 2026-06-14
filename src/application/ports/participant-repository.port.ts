@@ -1,6 +1,7 @@
 import { type Participant } from "../core/participant.entity";
 import {
   type CreateParticipantDTO,
+  type GetParticipantDTO,
   type ParticipantDTO,
   type ParticipantListDTO,
   type ParticipantRow,
@@ -10,6 +11,7 @@ import {
 
 export interface ParticipantRepositoryPort {
   findByTripId(tripId: string): Promise<ParticipantsRow[]>;
+  findByTripWithoutOwner(tripId: string): Promise<GetParticipantDTO[]>;
   findById(id: string): Promise<Participant | null>;
   findDetailsById(id: string): Promise<ParticipantDTO | null>;
   findByEmail(email: string): Promise<ParticipantRow["participant"] | null>;

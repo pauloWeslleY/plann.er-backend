@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 import type { Participant } from "@/application/core/participant.entity";
 import {
   type CreateParticipantDTO,
+  type GetParticipantDTO,
   type ParticipantDTO,
   type ParticipantListDTO,
   type ParticipantRow,
@@ -73,6 +74,30 @@ export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositor
         isConfirmed: row.isConfirmed,
       },
     });
+  }
+
+  async findByTripWithoutOwner(tripId: string): Promise<GetParticipantDTO[]> {
+    const participants = await database
+      .select({
+        id: schema.ParticipantsTable.id,
+        name: schema.ParticipantsTable.name,
+        email: schema.ParticipantsTable.email,
+        is_confirmed: schema.ParticipantsTripsTable.isConfirmed,
+      })
+      .from(schema.ParticipantsTable)
+      .innerJoin(
+        schema.ParticipantsTripsTable,
+        and(
+          eq(
+            schema.ParticipantsTripsTable.participantId,
+            schema.ParticipantsTable.id,
+          ),
+          eq(schema.ParticipantsTripsTable.isOwner, false),
+        ),
+      )
+      .where(eq(schema.ParticipantsTripsTable.tripId, tripId));
+
+    return participants.map(ParticipantMapper.toGetListDTO);
   }
 
   async findByTripId(tripId: string): Promise<ParticipantsRow[]> {

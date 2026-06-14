@@ -3,7 +3,6 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 
 import { type GetActivitiesPort } from "@/application/ports/get-activities.port";
-import { authMiddleware } from "@/resources/middleware/auth-middleware";
 
 export class FastifyGetActivitiesAdapter {
   constructor(private readonly getActivities: GetActivitiesPort) {}
@@ -12,7 +11,6 @@ export class FastifyGetActivitiesAdapter {
     app.withTypeProvider<ZodTypeProvider>().get(
       "/trips/:tripId/activities",
       {
-        preHandler: [authMiddleware],
         schema: {
           tags: ["Activities"],
           description: "Listar todas as atividades de uma viagem específica",

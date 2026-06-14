@@ -28,6 +28,7 @@ export class FastifyCreateParticipantAdapter {
           response: {
             200: z.array(
               z.object({
+                id: z.uuid(),
                 email: z.email(),
                 name: z.string().nullish(),
               }),

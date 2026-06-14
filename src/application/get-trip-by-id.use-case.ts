@@ -10,9 +10,6 @@ export class GetTripByIdUseCase implements GetTripByIdPort {
   async execute(input: { tripId: string }): Promise<TripFullDetailsDTO> {
     const trip = await this.tripRepository.findFullDetails(input.tripId);
 
-    console.log("[input.tripId] => ", input.tripId);
-    console.log("[GetTripByIdUseCase] => ", trip);
-
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
     }

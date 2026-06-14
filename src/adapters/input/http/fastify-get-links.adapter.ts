@@ -3,7 +3,6 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 
 import { type GetLinksPort } from "@/application/ports/get-links.port";
-import { authMiddleware } from "@/resources/middleware/auth-middleware";
 
 export class FastifyGetLinksAdapter {
   constructor(private readonly getLinks: GetLinksPort) {}
@@ -12,7 +11,6 @@ export class FastifyGetLinksAdapter {
     app.withTypeProvider<ZodTypeProvider>().get(
       "/trips/:tripId/links",
       {
-        preHandler: [authMiddleware],
         schema: {
           tags: ["Links"],
           description: "Listar todos os links de uma viagem específica",

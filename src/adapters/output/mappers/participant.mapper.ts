@@ -1,7 +1,9 @@
 import { Participant } from "@/application/core/participant.entity";
 import {
+  type GetParticipantDTO,
   type ParticipantDTO,
   type ParticipantRow,
+  type ParticipantsRow,
 } from "@/application/dto/participant.dto";
 
 export class ParticipantMapper {
@@ -28,6 +30,17 @@ export class ParticipantMapper {
       isConfirmed: row.participantTrip.isConfirmed,
       isOwner: row.participantTrip.isOwner,
       tripId: row.participantTrip.tripId,
+    };
+  }
+
+  static toGetListDTO(
+    row: Pick<ParticipantsRow, "id" | "name" | "email" | "is_confirmed">,
+  ): GetParticipantDTO {
+    return {
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      isConfirmed: row.is_confirmed,
     };
   }
 }

@@ -74,7 +74,7 @@ export class ConfirmTripUseCase implements ConfirmTripPort {
 
     await Promise.all(
       participants?.map(async (participant) => {
-        const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm`;
+        const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm?tripId=${trip.id}`;
 
         await mailClient.sendMail({
           from: {

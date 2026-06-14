@@ -10,9 +10,8 @@ export class GetParticipantsByTripUseCase implements GetParticipantsByTripPort {
   ) {}
 
   async execute(input: { tripId: string }): Promise<GetParticipantDTO[]> {
-    const participants = await this.participantRepository.findByTripId(
-      input.tripId,
-    );
+    const participants =
+      await this.participantRepository.findByTripWithoutOwner(input.tripId);
 
     if (!participants || participants.length === 0) {
       throw new NotFoundError(
@@ -20,15 +19,6 @@ export class GetParticipantsByTripUseCase implements GetParticipantsByTripPort {
       );
     }
 
-    const participantsByTrip = participants.map<GetParticipantDTO>(
-      (participant) => ({
-        id: participant.id,
-        name: participant.name,
-        email: participant.email,
-        isConfirmed: participant.is_confirmed,
-      }),
-    );
-
-    return participantsByTrip;
+    return participants;
   }
 }

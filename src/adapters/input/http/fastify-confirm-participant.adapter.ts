@@ -3,7 +3,6 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { type ConfirmParticipantPort } from "@/application/ports/confirm-participant.port";
-import { env } from "@/config/env";
 import { authMiddleware } from "@/resources/middleware/auth-middleware";
 
 export class FastifyConfirmParticipantAdapter {
@@ -26,12 +25,12 @@ export class FastifyConfirmParticipantAdapter {
         },
       },
       async (request, reply) => {
-        const result = await this.confirmParticipant.execute({
+        await this.confirmParticipant.execute({
           participantId: request.params.participantId,
           tripId: request.query.tripId,
         });
 
-        return reply.redirect(`${env.WEB_BASE_URL}/trips/${result.tripId}`);
+        return reply.status(204).send();
       },
     );
   }
