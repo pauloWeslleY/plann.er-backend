@@ -26,6 +26,7 @@ export class FastifyGetActivitiesAdapter {
                     id: z.uuid(),
                     title: z.string(),
                     occursAt: z.date(),
+                    isDone: z.boolean(),
                     tripId: z.uuid(),
                   }),
                 ),

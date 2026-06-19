@@ -52,6 +52,20 @@ export class DrizzleLinkRepositoryAdapter implements LinkRepositoryPort {
     return result ?? null;
   }
 
+  async findByTitle(title: string, tripId: string): Promise<LinkRow | null> {
+    const [result] = await database
+      .select()
+      .from(schema.LinksTable)
+      .where(
+        and(
+          eq(schema.LinksTable.title, title),
+          eq(schema.LinksTable.tripId, tripId),
+        ),
+      );
+
+    return result ?? null;
+  }
+
   async findLinkById(data: {
     id: string;
     tripId: string;

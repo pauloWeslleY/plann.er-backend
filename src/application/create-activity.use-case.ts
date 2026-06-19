@@ -17,7 +17,10 @@ export class CreateActivityUseCase implements CreateActivityPort {
   ) {}
 
   async execute(input: Omit<CreateActivityDTO, "id">): Promise<ActivityDTO> {
-    const trip = await this.tripRepository.findById(input.tripId);
+    const [trip, existingActivity] = await Promise.all([
+      this.tripRepository.findById(input.tripId),
+      this.activityRepository.findByTitle(input.title, input.tripId),
+    ]);
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
@@ -27,6 +30,10 @@ export class CreateActivityUseCase implements CreateActivityPort {
       throw new BadRequestError(
         "Atividade não pode ser criada para uma viagem com status cancelado.",
       );
+    }
+
+    if (existingActivity) {
+      throw new BadRequestError("Já existe uma atividade com este título.");
     }
 
     const activityDate = this.dateService.date(input.occursAt);

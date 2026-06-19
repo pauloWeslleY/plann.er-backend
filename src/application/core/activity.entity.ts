@@ -1,6 +1,7 @@
 interface ActivityProps {
   title: string;
   occursAt: Date;
+  isDone?: boolean;
   tripId: string;
 }
 
@@ -15,7 +16,10 @@ export class Activity {
   }
 
   static create(id: string, props: ActivityProps): Activity {
-    return new Activity(id, props);
+    return new Activity(id, {
+      ...props,
+      isDone: props.isDone ?? false,
+    });
   }
 
   get title(): string {
@@ -28,6 +32,14 @@ export class Activity {
 
   get tripId(): string {
     return this.props.tripId;
+  }
+
+  get isDone(): boolean {
+    return this.props.isDone ?? false;
+  }
+
+  updateStatus(isDone: boolean): void {
+    this.props.isDone = isDone;
   }
 
   update(props: Partial<ActivityProps>): void {

@@ -5,6 +5,7 @@ import {
   type ActivityDetailDTO,
   type ActivityDTO,
   type CreateActivityDTO as DataActivityRowDTO,
+  type UpdateStatusActivityDTO,
 } from "@/application/dto/activities.dto";
 import { type ActivityRepositoryPort } from "@/application/ports/activities.repository.port";
 import { database } from "@/resources/database";
@@ -45,6 +46,20 @@ export class DrizzleActivitiesRepositoryAdapter implements ActivityRepositoryPor
     return ActivityMapper.toDTO(result);
   }
 
+  async status(data: UpdateStatusActivityDTO): Promise<void> {
+    await database
+      .update(schema.ActivitiesTable)
+      .set({
+        isDone: data.isDone,
+      })
+      .where(
+        and(
+          eq(schema.ActivitiesTable.id, data.id),
+          eq(schema.ActivitiesTable.tripId, data.tripId),
+        ),
+      );
+  }
+
   async findManyByTripId(tripId: string): Promise<ActivityDTO[]> {
     const result = await database
       .select()
@@ -75,6 +90,7 @@ export class DrizzleActivitiesRepositoryAdapter implements ActivityRepositoryPor
         id: schema.ActivitiesTable.id,
         title: schema.ActivitiesTable.title,
         occursAt: schema.ActivitiesTable.occursAt,
+        isDone: schema.ActivitiesTable.isDone,
         trip: schema.TripsTable,
       })
       .from(schema.ActivitiesTable)
@@ -85,6 +101,28 @@ export class DrizzleActivitiesRepositoryAdapter implements ActivityRepositoryPor
       .where(
         and(
           eq(schema.ActivitiesTable.id, id),
+          eq(schema.ActivitiesTable.tripId, tripId),
+        ),
+      );
+
+    return result || null;
+  }
+
+  async findByTitle(
+    title: string,
+    tripId: string,
+  ): Promise<Omit<ActivityDTO, "tripId"> | null> {
+    const [result] = await database
+      .select({
+        id: schema.ActivitiesTable.id,
+        title: schema.ActivitiesTable.title,
+        occursAt: schema.ActivitiesTable.occursAt,
+        isDone: schema.ActivitiesTable.isDone,
+      })
+      .from(schema.ActivitiesTable)
+      .where(
+        and(
+          eq(schema.ActivitiesTable.title, title),
           eq(schema.ActivitiesTable.tripId, tripId),
         ),
       );

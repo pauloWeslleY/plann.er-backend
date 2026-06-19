@@ -2,11 +2,10 @@ import nodemailer from "nodemailer";
 import type SESTransport from "nodemailer/lib/ses-transport";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
-export type SendEmailProps =
-  | SESTransport.SentMessageInfo
-  | SMTPTransport.SentMessageInfo;
+type SentMessageInfoProps = SESTransport.SentMessageInfo;
+type SentMessageInfoType = SMTPTransport.SentMessageInfo;
 
-export type GetMailUrl = (info: SendEmailProps) => string | false;
+export type SendEmailProps = SentMessageInfoProps | SentMessageInfoType;
 
 export interface IMailClient {
   getMailUrl(info: SendEmailProps): string | false;

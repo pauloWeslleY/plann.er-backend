@@ -15,10 +15,19 @@ export class CreateLinkUseCase implements CreateLinkPort {
   ) {}
 
   async execute(input: InputLinkDTO): Promise<LinkRow> {
-    const trip = await this.tripRepository.findById(input.tripId);
+    const [trip, existingLink] = await Promise.all([
+      this.tripRepository.findById(input.tripId),
+      this.linkRepository.findByTitle(input.title, input.tripId),
+    ]);
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
+    }
+
+    if (existingLink) {
+      throw new BadRequestError(
+        "Já existe um link com este título para esta viagem.",
+      );
     }
 
     if (!trip.canBeEdited()) {

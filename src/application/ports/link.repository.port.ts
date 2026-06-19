@@ -10,6 +10,7 @@ export interface LinkRepositoryPort {
   create(data: Link): Promise<LinkRow>;
   delete(data: DeleteLinkDTO): Promise<void>;
   findManyByTripId(tripId: string): Promise<LinkDTO[]>;
+  findByTitle(title: string, tripId: string): Promise<LinkRow | null>;
   findById(id: string, tripId: string): Promise<LinkRow | null>;
   findLinkById(data: {
     id: string;
