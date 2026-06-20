@@ -21,7 +21,7 @@ export class FastifyUpdateStatusTripAdapter {
             status: z.enum(["PLANNED", "CONFIRMED", "CANCELLED"]),
           }),
           response: {
-            201: z.object({
+            200: z.object({
               id: z.string(),
               destination: z.string(),
               startsAt: z.date(),
@@ -34,7 +34,7 @@ export class FastifyUpdateStatusTripAdapter {
       },
       async (request, reply) => {
         const result = await this.updateStatusTrip.execute(request.body);
-        return reply.status(201).send(result);
+        return reply.status(200).send(result);
       },
     );
   }

@@ -18,10 +18,8 @@ export class UpdateStatusTripUseCase implements UpdateStatusTripPort {
       throw new NotFoundError("Viagem não encontrada.");
     }
 
-    if (!trip.canBeEdited()) {
-      throw new BadRequestError(
-        "Viagem não pode ser editada no status cancelado.",
-      );
+    if (input.status === trip.status) {
+      throw new BadRequestError("O status fornecido é o mesmo que o atual.");
     }
 
     trip.updateStatus(input.status as TripStatus);

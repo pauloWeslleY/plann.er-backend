@@ -48,10 +48,6 @@ export class Trip {
   }
 
   updateStatus(status: TripStatus): void {
-    if (!this.canBeEdited(status)) {
-      return;
-    }
-
     this.props.status = status;
   }
 
