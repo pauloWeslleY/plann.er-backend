@@ -5,12 +5,6 @@ import { DrizzleParticipantTokenRepositoryAdapter } from "@/adapters/output/pers
 import { env } from "@/config/env";
 import { UnauthorizedError } from "@/resources/errors/app-error";
 
-// type ParticipantTokenPayload = JwtPayload & {
-//   sub: string;
-//   email: string;
-//   type: "participant";
-// };
-
 export async function participantAuthMiddleware(
   request: FastifyRequest,
   reply: FastifyReply,

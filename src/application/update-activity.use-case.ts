@@ -32,7 +32,6 @@ export class UpdateActivityUseCase implements UpdateActivityPort {
       );
     }
 
-    // TODO: Validar se a data de ocorrência da atividade está dentro do intervalo da viagem
     const activityDate = this.dateService.date(input.occursAt);
 
     if (activityDate.isBefore(alreadyActivity.trip.startsAt)) {
@@ -54,11 +53,7 @@ export class UpdateActivityUseCase implements UpdateActivityPort {
       tripId: alreadyActivity.trip.id,
     });
 
-    activity.update({
-      title: input.title,
-      occursAt: input.occursAt,
-    });
-
+    activity.update({ title: input.title, occursAt: input.occursAt });
     return await this.activityRepository.update(activity);
   }
 }
