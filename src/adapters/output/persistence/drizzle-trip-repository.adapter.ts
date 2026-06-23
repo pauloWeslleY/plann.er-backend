@@ -3,6 +3,7 @@ import { alias } from "drizzle-orm/pg-core";
 
 import { type Trip } from "@/application/core/trip.entity";
 import {
+  type ManyTripsByParticipantDTO,
   type ManyTripsByUserDTO,
   type TripAndOwnerDTO,
   type TripDetailsDTO,
@@ -272,5 +273,26 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
       .limit(1);
 
     return result ?? null;
+  }
+
+  async findManyTripsByParticipantId(
+    participantId: string,
+  ): Promise<ManyTripsByParticipantDTO[]> {
+    const trips = await database
+      .select({
+        id: schema.TripsTable.id,
+        destination: schema.TripsTable.destination,
+        startsAt: schema.TripsTable.startsAt,
+        endsAt: schema.TripsTable.endsAt,
+        status: schema.TripsTable.status,
+      })
+      .from(schema.TripsTable)
+      .innerJoin(
+        schema.ParticipantsTripsTable,
+        eq(schema.ParticipantsTripsTable.tripId, schema.TripsTable.id),
+      )
+      .where(eq(schema.ParticipantsTripsTable.participantId, participantId));
+
+    return trips;
   }
 }

@@ -24,7 +24,8 @@ export class FastifyCreateInviteAdapter {
           }),
           response: {
             201: z.object({
-              activityId: z.string(),
+              participantId: z.string(),
+              email: z.string().nullable(),
             }),
           },
         },

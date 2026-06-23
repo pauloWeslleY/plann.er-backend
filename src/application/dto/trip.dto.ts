@@ -26,6 +26,7 @@ export interface TripDTO {
   isConfirmed: boolean;
   status: TripStatusType;
 }
+
 export interface TripDetailsDTO {
   id: string;
   destination: string;
@@ -103,5 +104,13 @@ export interface UpdateTripDTO {
 
 export interface UpdateStatusTripDTO {
   tripId: string;
+  status: TripStatusType;
+}
+
+export interface ManyTripsByParticipantDTO {
+  id: string;
+  destination: string;
+  startsAt: Date;
+  endsAt: Date;
   status: TripStatusType;
 }

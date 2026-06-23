@@ -1,6 +1,7 @@
 import { type Trip } from "../core/trip.entity";
 import {
   type ITrip,
+  type ManyTripsByParticipantDTO,
   type ManyTripsByUserDTO,
   type TripAndOwnerDTO,
   type TripDetailsDTO,
@@ -21,6 +22,9 @@ export interface TripRepositoryPort {
   findById(id: string): Promise<Trip | null>;
   findUniqueTripAndOwner(tripId: string): Promise<TripAndOwnerDTO | null>;
   findDetails(id: string): Promise<TripDetailsDTO | null>;
+  findManyTripsByParticipantId(
+    participantId: string,
+  ): Promise<ManyTripsByParticipantDTO[]>;
   findByTripAndUserId(
     tripId: string,
     userId: string,

@@ -22,6 +22,20 @@
       "when": 1781895790550,
       "tag": "0002_lively_tombstone",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782010000000,
+      "tag": "0003_participant_revoked_tokens",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782100421133,
+      "tag": "0004_amusing_ogun",
+      "breakpoints": true
     }
   ]
 }

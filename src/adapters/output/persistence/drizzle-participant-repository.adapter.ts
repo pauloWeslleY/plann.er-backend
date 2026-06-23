@@ -40,6 +40,7 @@ export class DrizzleParticipantRepositoryAdapter implements ParticipantRepositor
 
     return ParticipantMapper.toDomain(row);
   }
+
   async findDetailsById(id: string): Promise<ParticipantDTO | null> {
     const [row] = await database
       .select({

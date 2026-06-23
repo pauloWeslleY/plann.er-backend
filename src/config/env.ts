@@ -9,6 +9,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   PORT: z.coerce.number().default(3333),
+  PARTICIPANT_JWT_SECRET: z.string(),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
 });
 

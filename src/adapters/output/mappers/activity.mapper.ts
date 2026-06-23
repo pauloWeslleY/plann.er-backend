@@ -9,6 +9,7 @@ export class ActivityMapper {
       id: activity.id,
       title: activity.title,
       occursAt: activity.occursAt,
+      isDone: activity.isDone,
       tripId: activity.tripId,
     };
   }
