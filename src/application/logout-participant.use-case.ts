@@ -59,7 +59,6 @@ export class LogoutParticipantUseCase implements LogoutParticipantPort {
     token: string,
     type: ParticipantTokenPayload["type"],
   ): ParticipantTokenPayload {
-    console.log("[LogoutParticipantUseCase] Verificando token => ", token);
     try {
       const payload = jwt.verify(token, env.PARTICIPANT_JWT_SECRET);
 
