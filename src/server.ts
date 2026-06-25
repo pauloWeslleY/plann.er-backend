@@ -20,7 +20,7 @@ import { authRoutes } from "./resources/proxy/auth.routes";
 const app = fastify();
 
 app.register(cors, {
-  origin: [env.WEB_BASE_URL || "http://localhost:5173"],
+  origin: [env.WEB_BASE_URL, "http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   credentials: true,
@@ -36,6 +36,7 @@ app.register(fastifySwagger, {
   },
   transform: jsonSchemaTransform,
 });
+
 app.register(scalarAPIReference, { routePrefix: "/docs" });
 
 app.get("/", async (_, reply) => reply.redirect("/docs"));
