@@ -8,11 +8,13 @@ import { type IMailClient } from "@/resources/mail-client/mail-client";
 import { Trip } from "./core/trip.entity";
 import { type CreateTripDTO, TripStatus } from "./dto/trip.dto";
 import { type CreateTripPort } from "./ports/create-trip.port";
+import { type ParticipantRepositoryPort } from "./ports/participant-repository.port";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
 import { type IUnitOfWorkTransaction } from "./ports/unit-of-work-transaction.port";
 
 export class CreateTripUseCase implements CreateTripPort {
   private readonly tripRepository: TripRepositoryPort;
+  private readonly participantRepository: ParticipantRepositoryPort;
   private readonly createTripServiceTransaction: IUnitOfWorkTransaction;
   private readonly dateService: IDateService;
   private readonly mail: IMailClient;
@@ -20,6 +22,7 @@ export class CreateTripUseCase implements CreateTripPort {
   constructor(
     protected readonly dependecies: {
       tripRepository: TripRepositoryPort;
+      participantRepository: ParticipantRepositoryPort;
       createTripServiceTransaction: IUnitOfWorkTransaction;
       date: IDateService;
       mail: IMailClient;
@@ -30,6 +33,7 @@ export class CreateTripUseCase implements CreateTripPort {
       dependecies.createTripServiceTransaction;
     this.dateService = dependecies.date;
     this.mail = dependecies.mail;
+    this.participantRepository = dependecies.participantRepository;
   }
 
   async execute(
@@ -40,12 +44,33 @@ export class CreateTripUseCase implements CreateTripPort {
       endsAt: this.dateService.date(input.endsAt),
     };
 
-    const existingTrips = await this.tripRepository.findByStartDate(
-      tripDate.startsAt.toDate(),
-    );
+    const [existingTrips, participant] = await Promise.all([
+      this.tripRepository.findByStartDate(tripDate.startsAt.toDate()),
+      this.participantRepository.findByEmail(input.ownerEmail),
+    ]);
 
     if (existingTrips) {
       throw new BadRequestError("Já existe uma viagem para esta data.");
+    }
+
+    if (participant) {
+      throw new BadRequestError(
+        "O proprietário da viagem já está associado a uma viagem.",
+      );
+    }
+
+    const validateInviteToEmail = new Set(input.emailsToInvite);
+
+    if (validateInviteToEmail.size !== input.emailsToInvite.length) {
+      throw new BadRequestError(
+        "Existem e-mails duplicados na lista de convites.",
+      );
+    }
+
+    if (input.emailsToInvite.includes(input.ownerEmail)) {
+      throw new BadRequestError(
+        "O proprietário da viagem não pode ser incluído na lista de convites.",
+      );
     }
 
     if (!input.userId) {
@@ -62,6 +87,16 @@ export class CreateTripUseCase implements CreateTripPort {
 
     if (tripDate.endsAt.isBefore(tripDate.startsAt)) {
       throw new BadRequestError("Fim da viagem deve ser após o início.");
+    }
+
+    for (const email of input.emailsToInvite) {
+      const participant = await this.participantRepository.findByEmail(email);
+
+      if (participant) {
+        throw new BadRequestError(
+          `O e-mail ${email} já está associado a uma viagem.`,
+        );
+      }
     }
 
     const tripId = uuidv7();
