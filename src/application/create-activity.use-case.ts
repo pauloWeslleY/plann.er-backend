@@ -17,10 +17,12 @@ export class CreateActivityUseCase implements CreateActivityPort {
   ) {}
 
   async execute(input: Omit<CreateActivityDTO, "id">): Promise<ActivityDTO> {
-    const [trip, existingActivity] = await Promise.all([
+    const [trip, activity] = await Promise.all([
       this.tripRepository.findById(input.tripId),
       this.activityRepository.findByTitle(input.title, input.tripId),
     ]);
+
+    const occursAt = this.dateService.date(input.occursAt);
 
     if (!trip) {
       throw new NotFoundError("Viagem não encontrada.");
@@ -32,19 +34,23 @@ export class CreateActivityUseCase implements CreateActivityPort {
       );
     }
 
-    if (existingActivity) {
-      throw new BadRequestError("Já existe uma atividade com este título.");
+    const isValidTitleAndDate =
+      activity &&
+      this.dateService.date(activity.occursAt).isSame(occursAt, "hours");
+
+    if (isValidTitleAndDate) {
+      throw new BadRequestError(
+        "Já existe uma atividade com este título na mesma data.",
+      );
     }
 
-    const activityDate = this.dateService.date(input.occursAt);
-
-    if (activityDate.isBefore(trip.startsAt)) {
+    if (occursAt.isBefore(trip.startsAt)) {
       throw new BadRequestError(
         "Início da atividade deve ser após o início da viagem.",
       );
     }
 
-    if (activityDate.isAfter(trip.endsAt)) {
+    if (occursAt.isAfter(trip.endsAt)) {
       throw new BadRequestError(
         "Fim da atividade deve ser antes do fim da viagem.",
       );
@@ -52,14 +58,13 @@ export class CreateActivityUseCase implements CreateActivityPort {
 
     const activityId = uuidv7();
 
-    const activity = Activity.create(activityId, {
+    const newActivity = Activity.create(activityId, {
       title: input.title,
-      occursAt: activityDate.toDate(),
+      occursAt: occursAt.toDate(),
       tripId: input.tripId,
     });
 
-    await this.activityRepository.create(activity);
-
-    return activity;
+    await this.activityRepository.create(newActivity);
+    return newActivity;
   }
 }
