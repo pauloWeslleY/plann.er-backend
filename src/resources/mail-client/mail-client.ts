@@ -2,6 +2,8 @@ import nodemailer from "nodemailer";
 import type SESTransport from "nodemailer/lib/ses-transport";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
+import { env } from "@/config/env";
+
 type SentMessageInfoProps = SESTransport.SentMessageInfo;
 type SentMessageInfoType = SMTPTransport.SentMessageInfo;
 
@@ -16,17 +18,18 @@ export interface IMailClient {
 
 export class EmailClient implements IMailClient {
   async getMailClient() {
-    const transporter = nodemailer.createTransport({
+    const transportOptions: SMTPTransport.Options = {
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
+      requireTLS: true,
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
+        user: env.GMAIL_USER,
+        pass: env.GMAIL_APP_PASSWORD,
       },
-    });
+    };
 
-    return transporter;
+    return nodemailer.createTransport(transportOptions);
   }
 
   getMailUrl(info: SendEmailProps): string | false {
