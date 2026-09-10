@@ -129,14 +129,8 @@ export class CreateTripUseCase implements CreateTripPort {
     const mailClient = await this.mail.getMailClient();
 
     const mail = await mailClient.sendMail({
-      from: {
-        name: "Equipe plann.er",
-        address: "oi@plann.er",
-      },
-      to: {
-        name: input.ownerName,
-        address: input.ownerEmail,
-      },
+      from: `"Plann.er" <${env.GMAIL_USER}>`,
+      to: input.ownerEmail,
       subject: `Confirme sua viagem para ${input.destination} em ${formattedStartDate}`,
       html: `
         <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">

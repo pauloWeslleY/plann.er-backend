@@ -10,21 +10,19 @@ export type SendEmailProps = SentMessageInfoProps | SentMessageInfoType;
 export interface IMailClient {
   getMailUrl(info: SendEmailProps): string | false;
   getMailClient(): Promise<
-    nodemailer.Transporter<SMTPTransport.SentMessageInfo, SMTPTransport.Options>
+    nodemailer.Transporter<SentMessageInfoType, SMTPTransport.Options>
   >;
 }
 
 export class EmailClient implements IMailClient {
   async getMailClient() {
-    const account = await nodemailer.createTestAccount();
-
     const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false,
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: account.user,
-        pass: account.pass,
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
       },
     });
 
@@ -35,25 +33,3 @@ export class EmailClient implements IMailClient {
     return nodemailer.getTestMessageUrl(info);
   }
 }
-
-export async function getMailClient() {
-  const account = await nodemailer.createTestAccount();
-
-  const transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
-    auth: {
-      user: account.user,
-      pass: account.pass,
-    },
-  });
-
-  return transporter;
-}
-
-export function getTestMessageUrl(mailOptions: SendEmailProps) {
-  return nodemailer.getTestMessageUrl(mailOptions);
-}
-
-export type MailClient = Awaited<ReturnType<typeof getMailClient>>;

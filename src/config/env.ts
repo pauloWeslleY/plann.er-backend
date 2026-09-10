@@ -11,6 +11,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3333),
   PARTICIPANT_JWT_SECRET: z.string(),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
+  GMAIL_USER: z.string(),
+  GMAIL_APP_PASSWORD: z.string(),
 });
 
 export const env = envSchema.parse(process.env);
