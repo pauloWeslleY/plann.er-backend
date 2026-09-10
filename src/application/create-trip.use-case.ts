@@ -44,8 +44,17 @@ export class CreateTripUseCase implements CreateTripPort {
       endsAt: this.dateService.date(input.endsAt),
     };
 
+    if (!input.userId) {
+      throw new BadRequestError(
+        "Usuário deve estar autenticado para criar uma viagem.",
+      );
+    }
+
     const [existingTrips, participant] = await Promise.all([
-      this.tripRepository.findByStartDate(tripDate.startsAt.toDate()),
+      this.tripRepository.findByStartDate(
+        tripDate.startsAt.toDate(),
+        input.userId,
+      ),
       this.participantRepository.findByEmail(input.ownerEmail),
     ]);
 
@@ -70,12 +79,6 @@ export class CreateTripUseCase implements CreateTripPort {
     if (input.emailsToInvite.includes(input.ownerEmail)) {
       throw new BadRequestError(
         "O proprietário da viagem não pode ser incluído na lista de convites.",
-      );
-    }
-
-    if (!input.userId) {
-      throw new BadRequestError(
-        "Usuário deve estar autenticado para criar uma viagem.",
       );
     }
 

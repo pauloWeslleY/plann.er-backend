@@ -18,7 +18,7 @@ export interface TripRepositoryPort {
   findFullDetails(tripId: string): Promise<TripFullDetailsDTO | null>;
   findManyTripsByUserId(userId: string): Promise<ManyTripsByUserDTO[]>;
   findByDestination(destination: string): Promise<ITrip | null>;
-  findByStartDate(startDate: Date): Promise<ITrip | null>;
+  findByStartDate(startDate: Date, userId: string): Promise<ITrip | null>;
   findById(id: string): Promise<Trip | null>;
   findUniqueTripAndOwner(tripId: string): Promise<TripAndOwnerDTO | null>;
   findDetails(id: string): Promise<TripDetailsDTO | null>;

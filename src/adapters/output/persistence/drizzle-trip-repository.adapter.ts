@@ -29,11 +29,19 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
 
     return result ?? null;
   }
-  async findByStartDate(startDate: Date): Promise<TripRow | null> {
+  async findByStartDate(
+    startDate: Date,
+    userId: string,
+  ): Promise<TripRow | null> {
     const [result] = await database
       .select()
       .from(schema.TripsTable)
-      .where(eq(schema.TripsTable.startsAt, startDate));
+      .where(
+        and(
+          eq(schema.TripsTable.startsAt, startDate),
+          eq(schema.TripsTable.userId, userId),
+        ),
+      );
 
     return result ?? null;
   }
