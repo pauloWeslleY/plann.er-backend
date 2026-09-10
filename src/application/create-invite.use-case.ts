@@ -54,10 +54,7 @@ export class CreateInviteUseCase implements CreateInvitePort {
     const mailClient = await this.mail.getMailClient();
 
     const mail = await mailClient.sendMail({
-      from: {
-        name: "Equipe plann.er",
-        address: "oi@plann.er",
-      },
+      from: `"Plann.er" <${env.GMAIL_USER}>`,
       to: participant[0].email,
       subject: `Confirme sua viagem para ${trip.destination} em ${formattedStartDate}`,
       html: `

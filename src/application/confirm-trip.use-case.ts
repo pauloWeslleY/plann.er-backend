@@ -77,10 +77,7 @@ export class ConfirmTripUseCase implements ConfirmTripPort {
         const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm?tripId=${trip.id}`;
 
         await mailClient.sendMail({
-          from: {
-            name: "Equipe plann.er",
-            address: "oi@plann.er",
-          },
+          from: `"Plann.er" <${env.GMAIL_USER}>`,
           to: participant.email,
           subject: `Confirme sua presença na viagem para ${trip.destination} em ${formattedStartDate}`,
           html: `
