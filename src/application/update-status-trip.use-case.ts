@@ -2,7 +2,7 @@ import { BadRequestError, NotFoundError } from "@/resources/errors/app-error";
 
 import {
   type TripDTO,
-  type TripStatus,
+  TripStatus,
   type UpdateStatusTripDTO,
 } from "./dto/trip.dto";
 import { type TripRepositoryPort } from "./ports/trip-repository.port";
@@ -24,6 +24,8 @@ export class UpdateStatusTripUseCase implements UpdateStatusTripPort {
 
     trip.updateStatus(input.status as TripStatus);
 
+    const isConfirmedTrip = trip.status === TripStatus.CONFIRMED;
+    await this.tripRepository.confirmed(trip.id, isConfirmedTrip);
     return await this.tripRepository.updateStatus(trip.id, trip.status);
   }
 }

@@ -15,6 +15,7 @@ export interface TripRepositoryPort {
   save(data: { isConfirmed: boolean; tripId: string }): Promise<void>;
   update(trip: Trip): Promise<TripDTO>;
   updateStatus(tripId: string, status: TripStatusType): Promise<TripDTO>;
+  confirmed(tripId: string, isConfirmed: boolean): Promise<void>;
   findFullDetails(tripId: string): Promise<TripFullDetailsDTO | null>;
   findManyTripsByUserId(userId: string): Promise<ManyTripsByUserDTO[]>;
   findByDestination(destination: string): Promise<ITrip | null>;

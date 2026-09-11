@@ -243,6 +243,13 @@ export class DrizzleTripRepositoryAdapter implements TripRepositoryPort {
     return TripMapper.toDTO(result);
   }
 
+  async confirmed(tripId: string, isConfirmed: boolean): Promise<void> {
+    await database
+      .update(schema.TripsTable)
+      .set({ isConfirmed })
+      .where(eq(schema.TripsTable.id, tripId));
+  }
+
   async save(data: { isConfirmed: boolean; tripId: string }): Promise<void> {
     await database
       .update(schema.ParticipantsTripsTable)
